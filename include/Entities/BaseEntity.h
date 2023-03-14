@@ -12,17 +12,16 @@ public:
 	~BaseEntity(void);
 
 	void SetPosition(const SDL_FPoint& aPosition) { myPosition = aPosition; }
+	std::string SetName(const std::string& aName) { myName = aName; }
 
-	std::string GetName() { return name; }
+	std::string GetName() { return myName; }
 	SDL_FPoint GetPosition() const { return myPosition; }
 
 	bool CollidesWith(BaseEntity* anEntity);
 	virtual void Draw();
 
 protected:
-
-
-	std::string name;
+	std::string myName;
 	SDL_FPoint myPosition;
 	Texture* myTexture;
 

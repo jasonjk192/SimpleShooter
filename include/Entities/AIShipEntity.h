@@ -5,6 +5,8 @@
 
 #include "DynamicEntity.h"
 
+#include "BehaviourTree.h"
+
 class AIShipEntity : public DynamicEntity
 {
 public:
@@ -23,6 +25,19 @@ protected:
 	SDL_FPoint myDestination;
 
 	bool hasReachedDestination;
+
+	BehaviourTree myTree;
+
+private:
+	
+	// Can specify different functions and multiple behaviour trees
+
+	static void Move(float aTime, void* ship);
+	static void Pick(float aTime, void* ship);
+
+	BehaviourTree::Sequence followCursorSequence;
+	Action MoveToDestination = Action(*Move, this);
+	Action PickDestination = Action(*Pick, this);
 };
 
 #endif // AISHIPENTITY_H

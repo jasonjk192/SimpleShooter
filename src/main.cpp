@@ -77,5 +77,8 @@ int main(int argc, char* argv[])
 	}
 
     SDL_Quit();
+	delete drawer;
+	delete stateMachine;
+
     return EXIT_SUCCESS;
 }

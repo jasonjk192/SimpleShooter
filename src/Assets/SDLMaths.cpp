@@ -7,7 +7,7 @@ float SDLMaths::Distance(SDL_FPoint& a, SDL_FPoint& b)
 
 SDL_FPoint SDLMaths::Direction(SDL_FPoint& a, SDL_FPoint& b)
 {
-	return {a.x-b.x, a.y-b.y};
+	return {b.x-a.x, b.y-a.y};
 }
 
 SDL_FPoint SDLMaths::Normalize(SDL_FPoint& a)

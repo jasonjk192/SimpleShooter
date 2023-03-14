@@ -5,7 +5,6 @@ StartState::StartState(StateMachine* aStateMachine, Drawer* aDrawer):
     transitionAlpha(0)
 {
     ui = &UIAsset::GetInstance();
-    myStartMenu = new Menu(aDrawer);
     name = "Start";
     myStateMachine = aStateMachine;
     myDrawer = aDrawer;
@@ -14,6 +13,7 @@ StartState::StartState(StateMachine* aStateMachine, Drawer* aDrawer):
 
 bool StartState::Enter(void* params)
 {
+    myStartMenu = new Menu(myDrawer);
     myDrawer->SetColor(255, 255, 0, 255);
     myStartMenu->AddItem("Start Game");
     myStartMenu->AddItem("Quit");
@@ -32,8 +32,6 @@ bool StartState::Enter(void* params)
     SDL_SetCursor(myCursor);
 
     ship = new AIShipEntity({220,220}, ShipAsset::GetInstance().GetPlayerTexture(4), myDrawer);
-
-    ship->SetDestination({ 300,312 });
     ship->SetMaxSpeed(30);
     ship->SetMaxAcceleration(10);
 
@@ -51,7 +49,6 @@ bool StartState::Update(float aTime)
 
     int x, y;
     SDL_GetMouseState(&x, &y);
-    ship->SetDestination({(float)x,(float)y});
 
     return true;
 }
@@ -89,8 +86,6 @@ bool StartState::Draw()
     myStartMenu->Draw(0);
     myStartMenu->DrawSelectionBox(2);
 
-    //ShipAsset::GetInstance().Draw(myDrawer, 0);
-
     ship->Draw();
 
     if (isInTransition)
@@ -105,6 +100,9 @@ bool StartState::Exit()
     isInTransition = false;
     transitionAlpha = 0;
     SDL_FreeCursor(myCursor);
+
+    delete myStartMenu;
+    delete ship;
 
     return true;
 }
