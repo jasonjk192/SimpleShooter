@@ -40,9 +40,6 @@ private:
 
 	SDL_Cursor* myCursor;
 
-	std::vector<SDL_FPoint> destinations;
-	int dest;
-
 	static void onPressCallback(int index, void* context)
 	{ 
 		((StartState*)context)->isInTransition = true;

@@ -15,6 +15,7 @@ public:
 
 	void SetMoveSpeedMult(float aMoveSpeedMult) { myMoveSpeedMult = aMoveSpeedMult; }
 	void SetMaxSpeed(float aMaxSpeed) { myMaxSpeed = aMaxSpeed; }
+	void SetMaxAcceleration(float aMaxAcceleration) { myMaxAcceleration = aMaxAcceleration; }
 	void SetMass(float aMass) { myMass = aMass; }
 	void AddForce(SDL_FPoint& aForce) { myAcceleration = { myAcceleration.x + aForce.x / myMass, myAcceleration.y + aForce.y / myMass }; }
 
@@ -24,7 +25,7 @@ protected:
 
 	SDL_FPoint myDirection, myVelocity, myAcceleration;
 
-	float myMoveSpeedMult, myMaxSpeed, myMass;
+	float myMoveSpeedMult, myMaxSpeed, myMass, myMaxAcceleration;
 };
 
 #endif // DYNAMICENTITY_H

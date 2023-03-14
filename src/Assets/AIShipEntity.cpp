@@ -20,18 +20,19 @@ bool AIShipEntity::Update(float aTime)
 
 	if (!hasReachedDestination)
 	{
-		SDL_FPoint direction = SDLMaths::Direction(myDestination, myPosition);
-		if (SDLMaths::Magnitude(myVelocity) < myMaxSpeed)
-			AddForce(SDLMaths::Normalize(direction));
+		myDirection = SDLMaths::Direction(myDestination, myPosition);
+		AddForce(SDLMaths::Normalize(myDirection));
+		myAcceleration = SDLMaths::ClampMagnitude(myAcceleration, myMaxAcceleration);
 	}
 
 	myPosition = { myPosition.x + aTime * myVelocity.x * myMoveSpeedMult , myPosition.y + aTime * myVelocity.y * myMoveSpeedMult };
-
-	if (SDLMaths::Magnitude(myVelocity) < myMaxSpeed)
-		myVelocity = { myVelocity.x + aTime * myAcceleration.x, myVelocity.y + aTime * myAcceleration.y };
-
-	std::string s = hasReachedDestination ? "Yes" : "No";
-	std::cout << SDLMaths::Magnitude(myVelocity) << ", " << s.c_str()<< ", (" << myPosition.x << ", " << myPosition.y << ")" << std::endl;
+	myVelocity = { myVelocity.x + aTime * myAcceleration.x, myVelocity.y + aTime * myAcceleration.y };
+	myVelocity = SDLMaths::ClampMagnitude(myVelocity, myMaxSpeed);
 
 	return true;
+}
+
+void AIShipEntity::Draw()
+{
+	myDrawer->Draw(myTexture, myPosition.x - myTexture->GetSize()->x / 2, myPosition.y - myTexture->GetSize()->y / 2, 90 + SDLMaths::rad2deg(SDLMaths::Angle(myDirection)));
 }

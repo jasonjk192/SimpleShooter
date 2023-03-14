@@ -14,6 +14,13 @@ public:
 
 	static float Magnitude(SDL_FPoint& a);
 
+	static float Angle(SDL_FPoint& a);
+
+	static float rad2deg(float rad);
+
+	static float deg2rad(float deg);
+
+	static SDL_FPoint ClampMagnitude(SDL_FPoint& a, float b);
 };
 
 #endif // SDLMATHS_H

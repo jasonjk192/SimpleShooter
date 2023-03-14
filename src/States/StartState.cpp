@@ -31,16 +31,11 @@ bool StartState::Enter(void* params)
     myCursor = SDL_CreateColorCursor(surface, 0 , 0);
     SDL_SetCursor(myCursor);
 
-    ship = new AIShipEntity({220,220}, ShipAsset::GetInstance().GetTexture(), myDrawer);
+    ship = new AIShipEntity({220,220}, ShipAsset::GetInstance().GetPlayerTexture(4), myDrawer);
 
-    ship->SetDrawRegion(ShipAsset::GetInstance().GetPlayerRegion(0));
     ship->SetDestination({ 300,312 });
     ship->SetMaxSpeed(30);
-
-    destinations.push_back({ 200,212 });
-    destinations.push_back({ 300,312 });
-
-    dest = 1;
+    ship->SetMaxAcceleration(10);
 
     return true;
 }
@@ -53,11 +48,10 @@ bool StartState::Update(float aTime)
         return false;
 
     ship->Update(aTime);
-    if (ship->HasReachedDestination())
-    {
-        dest = (dest + 1) % destinations.size();
-        ship->SetDestination(destinations[dest]);
-    }
+
+    int x, y;
+    SDL_GetMouseState(&x, &y);
+    ship->SetDestination({(float)x,(float)y});
 
     return true;
 }
@@ -95,7 +89,7 @@ bool StartState::Draw()
     myStartMenu->Draw(0);
     myStartMenu->DrawSelectionBox(2);
 
-    //ShipAsset::GetInstance().Draw(myDrawer, 4);
+    //ShipAsset::GetInstance().Draw(myDrawer, 0);
 
     ship->Draw();
 

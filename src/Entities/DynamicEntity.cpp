@@ -7,7 +7,8 @@ DynamicEntity::DynamicEntity(const SDL_FPoint& aPosition, Texture* aTexture, Dra
 	myAcceleration({0,0}),
 	myMoveSpeedMult(1.f),
 	myMass(1.f),
-	myMaxSpeed(0.f)
+	myMaxSpeed(0.f),
+	myMaxAcceleration(0.f)
 {}
 
 DynamicEntity::~DynamicEntity(void)

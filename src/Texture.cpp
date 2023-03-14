@@ -61,6 +61,23 @@ Texture::Texture(SDL_Renderer* aRenderer, const char* aText, const char* aFontFi
 	TTF_CloseFont(font);
 }
 
+Texture::Texture(SDL_Renderer* aRenderer, Texture* aTexture, SDL_Rect* srcRect, Uint32 format, int access)
+{
+	if (srcRect == nullptr)
+	{
+		size = new SDL_Point{ aTexture->GetSize()->x, aTexture->GetSize()->y };
+		srcRect = new SDL_Rect{0,0,size->x,size->y};
+	}
+	else
+		size = new SDL_Point{ srcRect->w, srcRect->h };
+
+	texture = SDL_CreateTexture(aRenderer, format, access, size->x, size->y);
+	SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND);
+	SDL_SetRenderTarget(aRenderer, texture);
+	SDL_RenderCopy(aRenderer, aTexture->GetTexture(), srcRect, NULL);
+	SDL_SetRenderTarget(aRenderer, NULL);
+}
+
 Texture::~Texture(void)
 {
 	if (texture != nullptr)

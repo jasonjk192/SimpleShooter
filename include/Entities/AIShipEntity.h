@@ -12,6 +12,8 @@ public:
 	~AIShipEntity(void);
 
 	bool Update(float aTime);
+	void Draw();
+
 	void SetDestination(SDL_FPoint dstPoint) { myDestination = dstPoint; hasReachedDestination = false; }
 	
 	bool HasReachedDestination() { return hasReachedDestination; }
@@ -21,7 +23,6 @@ protected:
 	SDL_FPoint myDestination;
 
 	bool hasReachedDestination;
-
 };
 
 #endif // AISHIPENTITY_H

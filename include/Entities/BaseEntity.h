@@ -12,7 +12,6 @@ public:
 	~BaseEntity(void);
 
 	void SetPosition(const SDL_FPoint& aPosition) { myPosition = aPosition; }
-	void SetDrawRegion(SDL_Rect* aRegion) { myDrawRegion = aRegion; }
 
 	std::string GetName() { return name; }
 	SDL_FPoint GetPosition() const { return myPosition; }
@@ -26,8 +25,6 @@ protected:
 	std::string name;
 	SDL_FPoint myPosition;
 	Texture* myTexture;
-
-	SDL_Rect* myDrawRegion;
 
 	Drawer* myDrawer;
 };
