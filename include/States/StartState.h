@@ -10,7 +10,7 @@
 
 #include "BaseState.h"
 
-#include "Entities/AIShipEntity.h"
+#include "Entities/StartStateShipEntity.h"
 
 class StartState: public BaseState
 {
@@ -36,14 +36,11 @@ private:
 	BackgroundAsset* myBackgroundAsset;
 	UIAsset* ui;
 
-	AIShipEntity* ship;
+	StartStateShipEntity* ship;
 
 	SDL_Cursor* myCursor;
 
-	static void onPressCallback(int index, void* context)
-	{ 
-		((StartState*)context)->isInTransition = true;
-	}
+	static void onPressCallback(int index, void* context) { ((StartState*)context)->isInTransition = true; }
 };
 
 #endif // STARTSTATE_H

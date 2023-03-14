@@ -36,6 +36,15 @@ set(SDL_LIBRARIES SDL2main SDL2-static SDL2_image SDL2_ttf)
 
 # Source files
 set(PROJECT_SOURCES_WITHOUT_MAIN
+	 "src/Assets/UIAsset.cpp"
+	 "src/Assets/ShipAsset.cpp"
+	 "src/Assets/SDLMaths.cpp"
+
+	 "src/Entities/BaseEntity.cpp"
+	 "src/Entities/AIShipEntity.cpp"
+	 "src/Entities/DynamicEntity.cpp"
+	 "src/Entities/StartStateShipEntity.cpp"
+	
 	 "src/States/BaseState.cpp;"
 	 "src/States/GameLostState.cpp;"
 	 "src/States/GameWonState.cpp;"
@@ -45,10 +54,7 @@ set(PROJECT_SOURCES_WITHOUT_MAIN
 	 "src/Menu.cpp;"
 	 "src/StateMachine.cpp;"
 	 "src/Texture.cpp;"
-
-	 "src/Assets/UIAsset.cpp"
-	 "src/Assets/ShipAsset.cpp"
-	 "src/Entities/BaseEntity.cpp" "src/Entities/DynamicEntity.cpp" "src/Assets/AIShipEntity.cpp" "src/Assets/SDLMaths.cpp")
+	)
 add_executable(${PROJECT_NAME} src/main.cpp ${PROJECT_SOURCES_WITHOUT_MAIN})
 
 # Include files

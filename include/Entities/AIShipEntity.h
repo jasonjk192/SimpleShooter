@@ -17,27 +17,17 @@ public:
 	void Draw();
 
 	void SetDestination(SDL_FPoint dstPoint) { myDestination = dstPoint; hasReachedDestination = false; }
+
+	void SetBehaviourTree(BehaviourTree* aTree) { myTree = aTree; }
 	
 	bool HasReachedDestination() { return hasReachedDestination; }
 
 protected:
 
 	SDL_FPoint myDestination;
+	BehaviourTree* myTree;
 
 	bool hasReachedDestination;
-
-	BehaviourTree myTree;
-
-private:
-	
-	// Can specify different functions and multiple behaviour trees
-
-	static void Move(float aTime, void* ship);
-	static void Pick(float aTime, void* ship);
-
-	BehaviourTree::Sequence followCursorSequence;
-	Action MoveToDestination = Action(*Move, this);
-	Action PickDestination = Action(*Pick, this);
 };
 
 #endif // AISHIPENTITY_H

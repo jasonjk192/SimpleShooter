@@ -31,7 +31,7 @@ bool StartState::Enter(void* params)
     myCursor = SDL_CreateColorCursor(surface, 0 , 0);
     SDL_SetCursor(myCursor);
 
-    ship = new AIShipEntity({220,220}, ShipAsset::GetInstance().GetPlayerTexture(4), myDrawer);
+    ship = new StartStateShipEntity({220,220}, ShipAsset::GetInstance().GetPlayerTexture(4), myDrawer);
     ship->SetMaxSpeed(30);
     ship->SetMaxAcceleration(10);
 
