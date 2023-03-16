@@ -25,10 +25,12 @@ public:
 	void SetColor(Uint8 r, Uint8 g, Uint8 b, Uint8 a);
 	void SetBlendMode(int blendMode);
 	void SetScale(float scale);
-	void SetTextureColorMod(Texture aTexture, Uint8 r, Uint8 g, Uint8 b);
+	void SetTextureColorMod(Texture* aTexture, Uint8 r, Uint8 g, Uint8 b);
+	void SetTextureAlphaMod(Texture* aTexture, Uint8 a);
 
 	int GetTexturePositionFromRight(Texture* aTexture, int anOffset = 0);
 	int GetTexturePositionFromBottom(Texture* aTexture, int anOffset = 0);
+	float GetScale() const { return renderScale; }
 	void GetWindowSize(int *w, int *h) { SDL_GetWindowSize(myWindow, w, h); }
 	SDL_Renderer* GetRenderer() { return myRenderer; }
 

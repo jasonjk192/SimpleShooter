@@ -22,5 +22,7 @@ bool AIShipEntity::Update(float aTime)
 
 void AIShipEntity::Draw()
 {
+	myDrawer->SetScale(myScale);
 	myDrawer->Draw(myTexture, myPosition.x - myTexture->GetSize()->x / 2, myPosition.y - myTexture->GetSize()->y / 2, 90 + SDLMaths::rad2deg(SDLMaths::Angle(myDirection)));
+	myDrawer->SetScale(1.f);
 }

@@ -24,23 +24,21 @@ public:
     void Draw(Drawer* aDrawer, int anIndex = 0, int aCellX = 0, int aCellY = 0);
     void DrawWindow(Drawer* aDrawer, int anIndex = 0, int aCellX = 0, int aCellY = 0, int aSizeX = 8, int aSizeY = 8);
 
-    Texture* GetTexture() { return myUITexture; }
-    SDL_Rect* GetButtonDefaultRegion(int anIndex = 0) { return myButtonTexture[anIndex * 3]; }
-    SDL_Rect* GetButtonHoverRegion(int anIndex = 0) { return myButtonTexture[anIndex * 3 + 1]; }
-    SDL_Rect* GetButtonPressedRegion(int anIndex = 0) { return myButtonTexture[anIndex * 3 + 2]; }
+    Texture* GetButtonTexture(int anIndex) { return myButtonTexture[anIndex]; }
+    Texture* GetIconTexture(int anIndex) { return myIconTexture[anIndex]; }
+    Texture* GetBorderTexture(int anIndex) { return myBorderTexture[anIndex]; }
 
 private:
     UIAsset();
     UIAsset(Drawer* aDrawer);
 
-    std::vector<SDL_Rect*> myWindowTexture;
-    std::vector<SDL_Rect*> myButtonTexture;
+    std::vector<Texture*> myBorderTexture;
+    std::vector<Texture*> myButtonTexture;
+    std::vector<Texture*> myIconTexture;
 
-    void ExtractWindowElements(Drawer* aDrawer, Texture* UITexture);
-    void ExtractButtonElements(Drawer* aDrawer, Texture* UITexture);
-    void ExtractIconElements(Drawer* aDrawer, Texture* UITexture);
-
-    Texture* myUITexture;
+    void ExtractBorderElements(Drawer* aDrawer, Texture* aUITexture);
+    void ExtractButtonElements(Drawer* aDrawer, Texture* aUITexture);
+    void ExtractIconElements(Drawer* aDrawer, Texture* aUITexture);
 };
 
 #endif // UIASSET_H

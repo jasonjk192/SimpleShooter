@@ -2,7 +2,7 @@
 
 ShipAsset::~ShipAsset()
 {
-    delete myShipTexture;
+    
     for (int i = myPlayerTexture.size() - 1; i >= 0; i--)
         delete myPlayerTexture[i];
     for (int i = myEnemyTexture.size() - 1; i >= 0; i--)
@@ -21,16 +21,16 @@ void ShipAsset::Draw(Drawer* aDrawer, int anIndex, int aCellX, int aCellY)
     //aDrawer->Draw(myShipTexture, aCellX, aCellY);
 }
 
-ShipAsset::ShipAsset():
-    myShipTexture(nullptr)
+ShipAsset::ShipAsset()
 {}
 
 ShipAsset::ShipAsset(Drawer* aDrawer)
 {
-    myShipTexture = new Texture(aDrawer->GetRenderer(), ".\\data\\SpaceShooterAssetPack_Ships.png");
+    Texture* myShipTexture = new Texture(aDrawer->GetRenderer(), ".\\data\\SpaceShooterAssetPack_Ships.png");
     ExtractPlayerElements(aDrawer, myShipTexture);
     ExtractEnemyElements(aDrawer, myShipTexture);
     ExtractBossElements(aDrawer, myShipTexture);
+    delete myShipTexture;
 }
 
 void ShipAsset::ExtractPlayerElements(Drawer* aDrawer, Texture* aShipTexture)

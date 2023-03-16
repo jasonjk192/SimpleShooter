@@ -34,7 +34,7 @@ private:
 
 	Menu* myStartMenu;
 	BackgroundAsset* myBackgroundAsset;
-	UIAsset* ui;
+	UIAsset* myUIAsset;
 
 	StartStateShipEntity* ship;
 

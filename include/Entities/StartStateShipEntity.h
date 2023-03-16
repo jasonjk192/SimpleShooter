@@ -2,6 +2,7 @@
 #define STARTSTATESHIPENTITY_H
 
 #include "AIShipEntity.h"
+#include "ParticleSystem.h"
 
 class StartStateShipEntity : public AIShipEntity
 {
@@ -9,8 +10,13 @@ public:
 	StartStateShipEntity(const SDL_FPoint& aPosition, Texture* aTexture, Drawer* aDrawer);
 	~StartStateShipEntity(void);
 
+	bool Update(float aTime);
+	void Draw();
+
 private:
 
+	ParticleSystem* myBooster;
+	
 	// Can specify different functions and multiple behaviour trees
 
 	static void MoveForce(float aTime, void* ship);

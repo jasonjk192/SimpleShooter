@@ -56,7 +56,7 @@ private:
 	int CalculatePositionX(int anIndex);
 	int CalculatePositionY(int anIndex);
 
-	UIAsset* myUiAsset;
+	UIAsset* myUIAsset;
 	
 };
 

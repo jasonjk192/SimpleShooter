@@ -4,7 +4,8 @@ BaseEntity::BaseEntity(const SDL_FPoint& aPosition, Texture* aTexture, Drawer* a
 	myPosition(aPosition),
 	myDrawer(aDrawer),
 	myTexture(aTexture),
-	myName("BaseEntity")
+	myName("BaseEntity"),
+	myScale(1.f)
 {}
 
 BaseEntity::~BaseEntity(void)
@@ -13,5 +14,7 @@ BaseEntity::~BaseEntity(void)
 
 void BaseEntity::Draw()
 {
+	myDrawer->SetScale(myScale);
 	myDrawer->Draw(myTexture, myPosition.x - myTexture->GetSize()->x/2, myPosition.y - myTexture->GetSize()->y / 2);
+	myDrawer->SetScale(1.f);
 }

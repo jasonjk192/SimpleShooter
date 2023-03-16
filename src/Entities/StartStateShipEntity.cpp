@@ -8,10 +8,39 @@ StartStateShipEntity::StartStateShipEntity(const SDL_FPoint& aPosition, Texture*
 	followCursorSequence.addChild(&MoveToDestination);
 	myTree->setRootChild(&followCursorSequence);
 	myName = "AIShipEntity";
+	ParticleSystem::SystemParams params;
+	params.myLifetime = 2;
+	params.myMaxParticleCount = 25;
+	params.myFrequency = 0.1f;
+	params.myVelocity = { 0, 0 };
+	params.myAcceleration = { 0 , 15 };
+	params.myPosition = { 0,0 };
+	params.myTexture = aTexture;
+	myBooster = new ParticleSystem(aDrawer, params);
 }
 
 StartStateShipEntity::~StartStateShipEntity(void)
 {
+}
+
+bool StartStateShipEntity::Update(float aTime)
+{
+	myTree->run(aTime);
+
+	ParticleSystem::SystemParams* boosterParams = myBooster->GetParams();
+	boosterParams->myPosition = { myPosition.x - myDirection.x * 10, myPosition.y - myDirection.y * 10 };
+	boosterParams->myVelocity = { -myVelocity.x, -myVelocity.y };
+	myBooster->Update(aTime);
+	return true;
+}
+
+void StartStateShipEntity::Draw()
+{
+	myDrawer->SetScale(myScale);
+	myDrawer->Draw(myTexture, myPosition.x - myTexture->GetSize()->x / 2, myPosition.y - myTexture->GetSize()->y / 2, 90 + SDLMaths::rad2deg(SDLMaths::Angle(myDirection)));
+	myDrawer->SetScale(1.f);
+
+	myBooster->Draw();
 }
 
 // ---------------- //

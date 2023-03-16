@@ -14,7 +14,7 @@ Menu::Menu(Drawer* aDrawer):
     callback(nullptr),
     myContext(nullptr)
 {
-    myUiAsset = &UIAsset::GetInstance();
+    myUIAsset = &UIAsset::GetInstance();
 }
 
 Menu::~Menu(void)
@@ -91,7 +91,7 @@ void Menu::Draw(int anIndex)
         int winW, winH;
         myDrawer->GetWindowSize(&winW, &winH);
 
-        myUiAsset->DrawWindow(myDrawer, anIndex, myOffsetX - 2, myOffsetY - 2, maxSizeX + 2, (maxSizeY + 4) * myItems.size());
+        myUIAsset->DrawWindow(myDrawer, anIndex, myOffsetX - 2, myOffsetY - 2, maxSizeX + 2, (maxSizeY + 4) * myItems.size());
 
         int itemSize = myItems.size();
         for (int i = 0; i < itemSize; i++)
@@ -107,7 +107,7 @@ void Menu::DrawSelectionBox(int anIndex)
     int itemSize = myItems.size();
     SDL_Point* menuItemSize = myItems[myCurrentSelection]->GetSize();
     myDrawer->SetBlendMode(1);
-    myUiAsset->DrawWindow(myDrawer, anIndex, myOffsetX , CalculatePositionY(myCurrentSelection), maxSizeX , menuItemSize->y);
+    myUIAsset->DrawWindow(myDrawer, anIndex, myOffsetX , CalculatePositionY(myCurrentSelection), maxSizeX , menuItemSize->y);
     myDrawer->SetBlendMode(0);
 }
 

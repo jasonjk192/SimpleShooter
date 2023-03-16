@@ -60,10 +60,9 @@ int main(int argc, char* argv[])
 		float currentFrame = (float)SDL_GetTicks() * 0.001f;
 		float elapsedTime = currentFrame - lastFrame;
 
+		stateMachine->HandleEvents(&event);
 		if (!stateMachine->Update(elapsedTime))
 			break;
-
-		stateMachine->HandleEvents(&event);
 
 		SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
 		SDL_RenderClear(renderer);

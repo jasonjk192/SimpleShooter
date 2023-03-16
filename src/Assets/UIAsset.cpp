@@ -5,25 +5,25 @@ UIAsset::UIAsset()
 
 UIAsset::UIAsset(Drawer* aDrawer)
 {
-    myUITexture = new Texture(aDrawer->GetRenderer(), ".\\data\\SpaceShooterAssetPack_IU.png");
-    ExtractWindowElements(aDrawer, myUITexture);
+    Texture* myUITexture = new Texture(aDrawer->GetRenderer(), ".\\data\\SpaceShooterAssetPack_IU.png");
+    ExtractBorderElements(aDrawer, myUITexture);
     ExtractButtonElements(aDrawer, myUITexture);
+    delete myUITexture;
 }
 
 UIAsset::~UIAsset()
 {
-    delete myUITexture;
-    for (int i = myWindowTexture.size() - 1; i >= 0; i--)
-        delete myWindowTexture[i];
+    for (int i = myBorderTexture.size() - 1; i >= 0; i--)
+        delete myBorderTexture[i];
     for (int i = myButtonTexture.size() - 1; i >= 0; i--)
         delete myButtonTexture[i];
-    myWindowTexture.clear();
+    myBorderTexture.clear();
     myButtonTexture.clear();
 }
 
 void UIAsset::Draw(Drawer* aDrawer, int anIndex, int aCellX, int aCellY)
 {
-    aDrawer->Draw(myUITexture, myWindowTexture[anIndex], new SDL_Rect{ aCellX, aCellY , myWindowTexture[anIndex]->w, myWindowTexture[anIndex]->h });
+    //aDrawer->Draw(myUITexture, myBorderTexture[anIndex], new SDL_Rect{ aCellX, aCellY , myWindowTexture[anIndex]->w, myWindowTexture[anIndex]->h });
     //aDrawer->Draw(myButtonTexture[anIndex], aCellX, aCellY);
 }
 
@@ -32,61 +32,61 @@ void UIAsset::DrawWindow(Drawer* aDrawer, int anIndex, int aCellX, int aCellY, i
     aSizeX = aSizeX < 0 ? 0 : aSizeX;
     aSizeY = aSizeY < 0 ? 0 : aSizeY;
 
-    SDL_Rect croppedRect{ myWindowTexture[anIndex]->x, myWindowTexture[anIndex]->y, 3, 3 };
+    SDL_Rect croppedRect{ 0, 0, 3, 3 };
     SDL_Rect dstRect{ aCellX, aCellY, 3, 3 };
-    aDrawer->Draw(myUITexture, &croppedRect, &dstRect);
-    croppedRect = { myWindowTexture[anIndex]->x + 13, myWindowTexture[anIndex]->y, 3, 3 };
+    aDrawer->Draw(myBorderTexture[anIndex], &croppedRect, &dstRect);
+    croppedRect = { 13, 0, 3, 3 };
     dstRect = { aSizeX + aCellX, aCellY, 3, 3 };
-    aDrawer->Draw(myUITexture, &croppedRect, &dstRect);
-    croppedRect = { myWindowTexture[anIndex]->x, myWindowTexture[anIndex]->y + 13, 3, 3 };
+    aDrawer->Draw(myBorderTexture[anIndex], &croppedRect, &dstRect);
+    croppedRect = { 0, 13, 3, 3 };
     dstRect = { aCellX, aCellY + aSizeY, 3, 3 };
-    aDrawer->Draw(myUITexture, &croppedRect, &dstRect);
-    croppedRect = { myWindowTexture[anIndex]->x + 13, myWindowTexture[anIndex]->y + 13, 3, 3 };
+    aDrawer->Draw(myBorderTexture[anIndex], &croppedRect, &dstRect);
+    croppedRect = { 13, 13, 3, 3 };
     dstRect = { aSizeX + aCellX, aCellY + aSizeY, 3, 3 };
-    aDrawer->Draw(myUITexture, &croppedRect, &dstRect);
+    aDrawer->Draw(myBorderTexture[anIndex], &croppedRect, &dstRect);
 
     if (aSizeX > 0)
     {
-        croppedRect = { myWindowTexture[anIndex]->x + 3, myWindowTexture[anIndex]->y, 1, 3 };
+        croppedRect = { 3, 0, 1, 3 };
         dstRect = { aCellX + 3, aCellY, aSizeX - 3 , 3 };
-        aDrawer->Draw(myUITexture, &croppedRect, &dstRect);
-        croppedRect = { myWindowTexture[anIndex]->x + 3, myWindowTexture[anIndex]->y + 13, 1, 3 };
+        aDrawer->Draw(myBorderTexture[anIndex], &croppedRect, &dstRect);
+        croppedRect = { 3, 13, 1, 3 };
         dstRect = { aCellX + 3, aCellY + aSizeY , aSizeX - 3, 3 };
-        aDrawer->Draw(myUITexture, &croppedRect, &dstRect);
+        aDrawer->Draw(myBorderTexture[anIndex], &croppedRect, &dstRect);
     }
     if (aSizeY > 0)
     {
-        croppedRect = { myWindowTexture[anIndex]->x, myWindowTexture[anIndex]->y + 3, 3, 1 };
+        croppedRect = { 0, 3, 3, 1 };
         dstRect = { aCellX, aCellY + 3 , 3, aSizeY - 3 };
-        aDrawer->Draw(myUITexture, &croppedRect, &dstRect);
-        croppedRect = { myWindowTexture[anIndex]->x + 13, myWindowTexture[anIndex]->y+ 3, 3, 1 };
+        aDrawer->Draw(myBorderTexture[anIndex], &croppedRect, &dstRect);
+        croppedRect = { 13, 3, 3, 1 };
         dstRect = { aCellX + aSizeX, aCellY + 3, 3, aSizeY - 3 };
-        aDrawer->Draw(myUITexture, &croppedRect, &dstRect);
+        aDrawer->Draw(myBorderTexture[anIndex], &croppedRect, &dstRect);
     }
-    croppedRect = { myWindowTexture[anIndex]->x + 3, myWindowTexture[anIndex]->y+ 3, 1, 1 };
+    croppedRect = { 3, 3, 1, 1 };
     dstRect = { aCellX + 3, aCellY + 3, aSizeX - 3, aSizeY - 3 };
-    aDrawer->Draw(myUITexture, &croppedRect, &dstRect);
+    aDrawer->Draw(myBorderTexture[anIndex], &croppedRect, &dstRect);
     
 }
 
-void UIAsset::ExtractWindowElements(Drawer* aDrawer, Texture* UITexture)
+void UIAsset::ExtractBorderElements(Drawer* aDrawer, Texture* aUITexture)
 {
     for (int i = 0; i < 5; i++)
     {
-        myWindowTexture.push_back(new SDL_Rect{ 0, 16 * i, 16, 16 });
-        myWindowTexture.push_back(new SDL_Rect{ 16, 16 * i, 16, 16 });
+        myBorderTexture.push_back(new Texture(aDrawer->GetRenderer(), aUITexture, new SDL_Rect{ 0, 16 * i, 16, 16 }, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET));
+        myBorderTexture.push_back(new Texture(aDrawer->GetRenderer(), aUITexture, new SDL_Rect{ 16, 16 * i, 16, 16 }, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET));
     }
 }
 
-void UIAsset::ExtractButtonElements(Drawer* aDrawer, Texture* UITexture)
+void UIAsset::ExtractButtonElements(Drawer* aDrawer, Texture* aUITexture)
 {
     for (int i = 0; i < 8; i++)
     {
         for (int j = 0; j < 3; j++)
         {
-            myButtonTexture.push_back(new SDL_Rect{ 88 + j * 37, i * 14, 12, 13 });
-            myButtonTexture.push_back(new SDL_Rect{ 100 + j * 37, i * 14, 12, 13 });
-            myButtonTexture.push_back(new SDL_Rect{ 112 + j * 37, i * 14, 12, 13 });
+            myButtonTexture.push_back(new Texture(aDrawer->GetRenderer(), aUITexture, new SDL_Rect{ 88 + j * 37, i * 14, 12, 13 }, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET));
+            myButtonTexture.push_back(new Texture(aDrawer->GetRenderer(), aUITexture, new SDL_Rect{ 100 + j * 37, i * 14, 12, 13 }, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET));
+            myButtonTexture.push_back(new Texture(aDrawer->GetRenderer(), aUITexture, new SDL_Rect{ 112 + j * 37, i * 14, 12, 13 }, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET));
         }
     }
 }

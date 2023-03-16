@@ -107,9 +107,14 @@ void Drawer::SetScale(float scale)
 	renderScale = scale;
 }
 
-void Drawer::SetTextureColorMod(Texture aTexture, Uint8 r, Uint8 g, Uint8 b)
+void Drawer::SetTextureColorMod(Texture* aTexture, Uint8 r, Uint8 g, Uint8 b)
 {
-	SDL_SetTextureColorMod(aTexture.GetTexture(), r, g, b);
+	SDL_SetTextureColorMod(aTexture->GetTexture(), r, g, b);
+}
+
+void Drawer::SetTextureAlphaMod(Texture* aTexture, Uint8 a)
+{
+	SDL_SetTextureAlphaMod(aTexture->GetTexture(), a);
 }
 
 int Drawer::GetTexturePositionFromRight(Texture* aTexture, int anOffset)

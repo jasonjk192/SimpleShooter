@@ -4,11 +4,11 @@ StartState::StartState(StateMachine* aStateMachine, Drawer* aDrawer):
     isInTransition(false),
     transitionAlpha(0)
 {
-    ui = &UIAsset::GetInstance();
     name = "Start";
     myStateMachine = aStateMachine;
     myDrawer = aDrawer;
     myBackgroundAsset = &BackgroundAsset::GetInstance();
+    myUIAsset = &UIAsset::GetInstance();
 }  
 
 bool StartState::Enter(void* params)
@@ -31,9 +31,10 @@ bool StartState::Enter(void* params)
     myCursor = SDL_CreateColorCursor(surface, 0 , 0);
     SDL_SetCursor(myCursor);
 
-    ship = new StartStateShipEntity({220,220}, ShipAsset::GetInstance().GetPlayerTexture(4), myDrawer);
+    ship = new StartStateShipEntity({ (float)(std::rand() % winW), (float)(std::rand() % winH) }, ShipAsset::GetInstance().GetPlayerTexture(4), myDrawer);
     ship->SetMaxSpeed(30);
     ship->SetMaxAcceleration(10);
+    ship->SetScale(2.f);
 
     return true;
 }
@@ -79,7 +80,7 @@ bool StartState::HandleEvents(SDL_Event* event)
 bool StartState::Draw()
 {
     myDrawer->SetScale(5);
-    myBackgroundAsset->Draw(myDrawer, 0, 0, 0);
+    myDrawer->Draw(myBackgroundAsset->GetBackgroundTexture(0), 0, 0);
     myDrawer->SetScale(1);
 
     myDrawer->SetColor(255, 255, 0, 255);
