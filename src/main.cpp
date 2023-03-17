@@ -45,6 +45,7 @@ int main(int argc, char* argv[])
 	UIAsset* uiAsset = &UIAsset::GetInstance(drawer);
 	BackgroundAsset* bgAsset = &BackgroundAsset::GetInstance(drawer);
 	ShipAsset* shipAsset = &ShipAsset::GetInstance(drawer);
+	MiscAsset* miscAsset = &MiscAsset::GetInstance(drawer);
 
 	StateMachine* stateMachine = new StateMachine();
 	stateMachine->Add(new StartState(stateMachine, drawer));

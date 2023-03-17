@@ -50,12 +50,13 @@ void ParticleSystem::Spawn()
 
 void ParticleSystem::Draw()
 {
+	SDL_Point* texSize = myParams.myTexture->GetSize();
 	myDrawer->SetBlendMode(1);
 	for (auto& particle : myParticles)
 	{
 		myDrawer->SetTextureColorMod(myParams.myTexture, particle.myColor.r, particle.myColor.g, particle.myColor.b);
 		myDrawer->SetTextureAlphaMod(myParams.myTexture, 255 * particle.myLifetime / myParams.myLifetime);
-		myDrawer->Draw(myParams.myTexture, particle.myPosition.x, particle.myPosition.y, SDLMaths::rad2deg(particle.myRotation));
+		myDrawer->Draw(myParams.myTexture, particle.myPosition.x - texSize->x/2, particle.myPosition.y - texSize->y/2, 90+SDLMaths::rad2deg(particle.myRotation));
 	}
 	myDrawer->SetTextureColorMod(myParams.myTexture, 255, 255, 255);
 	myDrawer->SetTextureAlphaMod(myParams.myTexture, 255);

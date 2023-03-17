@@ -4,6 +4,8 @@
 #include "AIShipEntity.h"
 #include "ParticleSystem.h"
 
+#include "Assets/MiscAsset.h"
+
 class StartStateShipEntity : public AIShipEntity
 {
 public:
@@ -19,13 +21,21 @@ private:
 	
 	// Can specify different functions and multiple behaviour trees
 
-	static void MoveForce(float aTime, void* ship);
-	static void MoveVel(float aTime, void* ship);
-	static void Pick(float aTime, void* ship);
+	static bool CheckCloseness(float aTIme, void* ship);
+	static BehaviourTree::NodeStatus MoveForce(float aTime, void* ship);
+	static BehaviourTree::NodeStatus MoveVel(float aTime, void* ship);
+	static BehaviourTree::NodeStatus PickMouse(float aTime, void* ship);
+	static BehaviourTree::NodeStatus PickRandom(float aTime, void* ship);
+
+	BehaviourTree::Selector conditionalMoveSequence;
+	BehaviourTree::ConditionalNode closeToMouseCondition;
 
 	BehaviourTree::Sequence followCursorSequence;
 	Action MoveToDestination = Action(*MoveVel, this);
-	Action PickDestination = Action(*Pick, this);
+	Action PickMouseDestination = Action(*PickMouse, this);
+
+	BehaviourTree::Sequence randomMoveSequence;
+	Action PickRandomDestination = Action(*PickRandom, this);
 };
 
 #endif // STARTSTATESHIPENTITY_H

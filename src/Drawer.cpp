@@ -52,7 +52,7 @@ void Drawer::DrawLine(int aX, int aY, int bX, int bY)
 
 void Drawer::DrawRect(int x, int y, int w, int h, bool isFilled)
 {
-	const SDL_Rect rect{ x, y, w, h };
+	const SDL_Rect rect{ x + (int)((w / 2.f) - (w / 2.f * renderScale)), y+ (int)((h / 2.f) - (h / 2.f * renderScale)), (int)(w * renderScale), (int)(h * renderScale) };
 	isFilled ? SDL_RenderFillRect(myRenderer, &rect) : SDL_RenderDrawRect(myRenderer, &rect);
 }
 
