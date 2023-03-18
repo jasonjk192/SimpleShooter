@@ -8,9 +8,7 @@ StartStateShipEntity::StartStateShipEntity(const SDL_FPoint& aPosition, Texture*
 	followCursorSequence.addChild(&MoveToDestination);
 	randomMoveSequence.addChild(&PickRandomDestination);
 	randomMoveSequence.addChild(&MoveToDestination);
-	closeToMouseCondition.setConditionalFunction(&CheckCloseness, this);
-	closeToMouseCondition.setChild(&followCursorSequence);
-	conditionalMoveSequence.addChild(&closeToMouseCondition);
+	conditionalMoveSequence.addChild(&followCursorSequence);
 	conditionalMoveSequence.addChild(&randomMoveSequence);
 	myTree->setRootChild(&conditionalMoveSequence);
 	myName = "AIShipEntity";
@@ -26,6 +24,11 @@ StartStateShipEntity::StartStateShipEntity(const SDL_FPoint& aPosition, Texture*
 
 StartStateShipEntity::~StartStateShipEntity(void)
 {
+}
+
+bool StartStateShipEntity::HandleEvents(SDL_Event* event)
+{
+	return myTree->handleEvents(event);
 }
 
 bool StartStateShipEntity::Update(float aTime)
@@ -55,25 +58,18 @@ void StartStateShipEntity::Draw()
 // Static functions //
 // ---------------- //
 
-bool StartStateShipEntity::CheckCloseness(float aTime, void* ship)
-{
-	int x, y;
-	SDL_GetMouseState(&x, &y);
-	if (SDLMaths::Distance(((StartStateShipEntity*)ship)->myPosition, SDL_FPoint{ (float)x,(float)y }) < 50.f)
-		return true;
-	return false;
-}
-
-BehaviourTree::NodeStatus StartStateShipEntity::PickMouse(float aTime, void* ship)
+BehaviourTree::NodeStatus StartStateShipEntity::PickMouse(float aTime, void* ship, SDL_Event* event)
 {
 	StartStateShipEntity* myShip = (StartStateShipEntity*)ship;
 	int x, y;
 	SDL_GetMouseState(&x, &y);
+	if (SDLMaths::Distance(((StartStateShipEntity*)ship)->myPosition, SDL_FPoint { (float)x, (float)y }) > 150.f)
+		return BehaviourTree::NodeStatus::FAILED;
 	myShip->SetDestination({ (float)x,(float)y });
 	return BehaviourTree::NodeStatus::SUCCESS;
 }
 
-BehaviourTree::NodeStatus StartStateShipEntity::PickRandom(float aTime, void* ship)
+BehaviourTree::NodeStatus StartStateShipEntity::PickRandom(float aTime, void* ship, SDL_Event* event)
 {
 	StartStateShipEntity* myShip = (StartStateShipEntity*)ship;
 	int winW, winH;
@@ -82,7 +78,7 @@ BehaviourTree::NodeStatus StartStateShipEntity::PickRandom(float aTime, void* sh
 	return BehaviourTree::NodeStatus::SUCCESS;
 }
 
-BehaviourTree::NodeStatus StartStateShipEntity::MoveForce(float aTime, void* ship)
+BehaviourTree::NodeStatus StartStateShipEntity::MoveForce(float aTime, void* ship, SDL_Event* event)
 {
 	StartStateShipEntity* myShip = (StartStateShipEntity*)ship;
 	
@@ -105,9 +101,16 @@ BehaviourTree::NodeStatus StartStateShipEntity::MoveForce(float aTime, void* shi
 	return BehaviourTree::NodeStatus::RUNNING;
 }
 
-BehaviourTree::NodeStatus StartStateShipEntity::MoveVel(float aTime, void* ship)
+BehaviourTree::NodeStatus StartStateShipEntity::MoveVel(float aTime, void* ship, SDL_Event* event)
 {
+	switch (event->type)
+	{
+	case SDL_MOUSEMOTION: int x, y; SDL_GetMouseState(&x, &y);
+		if (SDLMaths::Distance(((StartStateShipEntity*)ship)->myPosition, SDL_FPoint { (float)x, (float)y }) <= 150.f)  return BehaviourTree::NodeStatus::FAILED;
+	}
+
 	StartStateShipEntity* myShip = (StartStateShipEntity*)ship;
+
 	float distance = SDLMaths::Distance(myShip->myPosition, myShip->myDestination);
 
 	if (distance < 8.f)

@@ -70,6 +70,7 @@ bool StartState::UpdateInput()
 
 bool StartState::HandleEvents(SDL_Event* event)
 {
+    ship->HandleEvents(event);
     if (!isInTransition)
     {
         myStartMenu->HandleEvents(event);

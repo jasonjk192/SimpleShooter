@@ -45,19 +45,18 @@ public:
 	public:
 		virtual NodeStatus run(float aTime) override {
 			int index = 0;
+			tree->currentNodeStack.pop_back();
+			NodeStatus status = NodeStatus::FAILED;
 			for (; index < getChildren().size(); index++)
 			{
-				NodeStatus status = getChildren()[index]->run(aTime); // If failed then keep running
+				tree->currentNodeStack.push_back(getChildren()[index]);
+				status = getChildren()[index]->run(aTime); // If failed then keep running
 				if (status == NodeStatus::SUCCESS) { tree->currentNodeStack.push_back(getChildren()[index]); return NodeStatus::SUCCESS; }  // If success then return status
 				else if (status == NodeStatus::RUNNING) break; // If running then we will add all the remaining children to the stack
 			}
 			for (int i = getChildren().size() - 1; i >= index; i--) // Add in reverse order so that the last element is at bottom of stack and gets executed lsat from amongst the children
 				tree->currentNodeStack.push_back(getChildren()[i]);
-			/*for (Node* child : getChildren()) {  // The generic Selector implementation
-				if (child->run(aTime) == NodeStatus::SUCCESS)  // If one child succeeds, the entire operation run() succeeds.  Failure only results if all children fail.
-					return NodeStatus::SUCCESS;
-			}*/
-			return NodeStatus::FAILED;  // All children failed so the entire run() operation fails.
+			return status;  // All children failed so the entire run() operation fails.
 		}
 	};
 
@@ -76,16 +75,18 @@ public:
 	public:
 		virtual NodeStatus run(float aTime) override {
 			int index = 0;
+			tree->currentNodeStack.pop_back();
+			NodeStatus status = NodeStatus::SUCCESS;
 			for (; index < getChildren().size(); index++) 
 			{
-				NodeStatus status = getChildren()[index]->run(aTime); // If success then keep checking the next child
+				tree->currentNodeStack.push_back(getChildren()[index]);
+				status = getChildren()[index]->run(aTime); // If success then keep checking the next child
 				if (status == NodeStatus::FAILED) return NodeStatus::FAILED; // If failed then return status
 				else if (status == NodeStatus::RUNNING) break; // If running then we will add all the remaining children to the stack
 			}
 			for (int i = getChildren().size() - 1; i >= index; i--) // Add in reverse order so that the last element is at bottom of stack and gets executed lsat from amongst the children
 				tree->currentNodeStack.push_back(getChildren()[i]);
-			tree->currentNodeStack.push_back(getChildren()[0]); // Since we returned a success status, the top most item in the stack gets popped, so we add a dummy node that will get popped instead
-			return NodeStatus::SUCCESS;  // All children added to stack successfully
+			return status;  // All children added to stack successfully
 		}
 	};
 
@@ -102,7 +103,7 @@ public:
 	class Root : public DecoratorNode {
 	private:
 		friend class BehaviourTree;
-		virtual NodeStatus run(float aTime) override { tree->currentNodeStack.push_back(getChild()); return getChild()->run(aTime); } // Child added to stack in case it is running, it is removed from stack if success
+		virtual NodeStatus run(float aTime) override { tree->currentNodeStack.pop_back(); tree->currentNodeStack.push_back(getChild()); return getChild()->run(aTime); } // Child added to stack in case it is running, it is removed from stack if success
 	};
 
 	class Inverter : public DecoratorNode {  // Inverts the result of the child. A child fails and it will return success to its parent, or a child succeeds and it will return failure to the parent.
@@ -141,13 +142,15 @@ public:
 private:
 	Root* root;
 	std::vector<Node*> currentNodeStack;
+	SDL_Event* currentEvent;
 
 public:
 	std::string name = "BT";
-	BehaviourTree() : root(new Root) { currentNodeStack.push_back(root); }
+	BehaviourTree() : root(new Root), currentEvent(nullptr) { currentNodeStack.push_back(root); }
 	void setRootChild(Node* rootChild) const { root->setChild(rootChild); root->setTree(const_cast<BehaviourTree*>(this)); }
+	bool handleEvents(SDL_Event* event) { currentEvent = event; return true; }
 	bool run(float aTime)
-	{
+	{	
 		NodeStatus status;
 		do {
 			status = currentNodeStack[currentNodeStack.size() - 1]->run(aTime);
@@ -158,27 +161,29 @@ public:
 			}
 			else if (status == NodeStatus::SUCCESS)
 			{
-				if (currentNodeStack.size() > 1)
-					currentNodeStack.pop_back();
+				currentNodeStack.pop_back();
 			}
 			else { break; }
 		}
-		while (status == NodeStatus::SUCCESS);
+		while (status == NodeStatus::SUCCESS && !currentNodeStack.empty());
+		if (currentNodeStack.empty())
+			currentNodeStack.push_back(root);
 		return true;
 	}
 	void addToStack(Node* node) { currentNodeStack.push_back(node); }
+	SDL_Event* getEvent() { return currentEvent; }
 };
 
 class Action : public BehaviourTree::Node {
 private:
 	void* myContext;
-	BehaviourTree::NodeStatus(*function)(float aTime, void* aContext);
+	BehaviourTree::NodeStatus(*function)(float aTime, void* aContext, SDL_Event* anEvent);
 public:
-	Action(BehaviourTree::NodeStatus(*aFunction)(float time, void* context), void* aContext) : function(aFunction), myContext(aContext) {}
+	Action(BehaviourTree::NodeStatus(*aFunction)(float time, void* context, SDL_Event* anEvent), void* aContext) : function(aFunction), myContext(aContext) {}
 	void setTree(BehaviourTree* bt) { tree = bt; }
 private:
 	virtual BehaviourTree::NodeStatus run(float aTime) override {
-		return function(aTime, myContext);
+		return function(aTime, myContext, tree->getEvent());
 	}
 };
 

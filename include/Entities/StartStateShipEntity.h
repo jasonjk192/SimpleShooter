@@ -12,8 +12,9 @@ public:
 	StartStateShipEntity(const SDL_FPoint& aPosition, Texture* aTexture, Drawer* aDrawer);
 	~StartStateShipEntity(void);
 
+	bool HandleEvents(SDL_Event* event);
 	bool Update(float aTime);
-	void Draw();
+	void Draw();	
 
 private:
 
@@ -21,14 +22,12 @@ private:
 	
 	// Can specify different functions and multiple behaviour trees
 
-	static bool CheckCloseness(float aTIme, void* ship);
-	static BehaviourTree::NodeStatus MoveForce(float aTime, void* ship);
-	static BehaviourTree::NodeStatus MoveVel(float aTime, void* ship);
-	static BehaviourTree::NodeStatus PickMouse(float aTime, void* ship);
-	static BehaviourTree::NodeStatus PickRandom(float aTime, void* ship);
+	static BehaviourTree::NodeStatus MoveForce(float aTime, void* ship, SDL_Event* event);
+	static BehaviourTree::NodeStatus MoveVel(float aTime, void* ship, SDL_Event* event);
+	static BehaviourTree::NodeStatus PickMouse(float aTime, void* ship, SDL_Event* event);
+	static BehaviourTree::NodeStatus PickRandom(float aTime, void* ship, SDL_Event* event);
 
 	BehaviourTree::Selector conditionalMoveSequence;
-	BehaviourTree::ConditionalNode closeToMouseCondition;
 
 	BehaviourTree::Sequence followCursorSequence;
 	Action MoveToDestination = Action(*MoveVel, this);
