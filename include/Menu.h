@@ -21,8 +21,11 @@ public:
 	void RemoveItem(int anIndex);
 	void Clear();
 
+	void SelectPrevious() { myCurrentSelection = myCurrentSelection <= 0 ? 0 : --myCurrentSelection; }
+	void SelectNext() { myCurrentSelection = myCurrentSelection >= myItems.size() - 1 ? myItems.size() - 1 : ++myCurrentSelection; }
+
 	bool HandleEvents(SDL_Event* event);
-	void OnItemSelected(int index);
+	bool OnItemSelected(int index);
 
 	void Draw(int anIndex = 0);
 	void DrawSelectionBox(int anIndex = 0);
@@ -32,7 +35,7 @@ public:
 	void SetSpacing(int anItemSpacing = 0) { myItemSpacing = anItemSpacing; }
 	void SetActive(bool anIsActive) { isActive = anIsActive; }
 
-	void SetCallback(void(*aCallback)(int anIndex, void* context), void* aContext) { callback = aCallback; myContext = aContext; }
+	void SetCallback(bool(*aCallback)(int anIndex, void* context), void* aContext) { callback = aCallback; myContext = aContext; }
 
 	int GetMenuWidth() { return maxSizeX; }
 	int GetMenuHeight() { return myItems.size() * maxSizeY; }
@@ -49,7 +52,7 @@ private:
 	int maxSizeX, maxSizeY;
 	int myItemSpacing;
 
-	void (*callback)(int anIndex, void* aContext);
+	bool (*callback)(int anIndex, void* aContext);
 	void* myContext;
 	bool isItemSelected, isActive;
 

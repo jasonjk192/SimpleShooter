@@ -44,11 +44,12 @@ void StateMachine::Add(BaseState* aBaseState)
 	myStates.push_back(aBaseState);
 }
 
-void StateMachine::Push(std::string stateName)
+void StateMachine::Push(std::string stateName, void* params)
 {
 	auto state = GetState(stateName);
 	if (state == nullptr)
 		return;
+	state->Enter(params);
 	myCurrentStates.push_back(state);
 }
 

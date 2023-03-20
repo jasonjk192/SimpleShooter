@@ -57,7 +57,7 @@ set(PROJECT_SOURCES_WITHOUT_MAIN
 	 "src/StateMachine.cpp;"
 	 "src/Texture.cpp;"
 	 "src/ParticleSystem.cpp"
-	)
+	 "src/States/TransitionState.cpp")
 add_executable(${PROJECT_NAME} src/main.cpp ${PROJECT_SOURCES_WITHOUT_MAIN})
 
 # Include files

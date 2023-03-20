@@ -2,8 +2,15 @@
 
 BaseState::BaseState():
 	myDrawer(nullptr),
-	myStateMachine(nullptr)
+	myStateMachine(nullptr),
+	name("")
 { }
+
+BaseState::BaseState(StateMachine* aStateMachine, Drawer* aDrawer, std::string aName):
+	myDrawer(aDrawer),
+	myStateMachine(aStateMachine),
+	name(aName)
+{}
 
 BaseState::~BaseState(void)
 { }

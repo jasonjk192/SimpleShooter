@@ -20,27 +20,28 @@ public:
 
 	bool Enter(void* params);
 	bool Update(float aTime);
-	bool UpdateInput();
 	bool HandleEvents(SDL_Event* event);
 	bool Draw();
 	bool Exit();
 
 private:
-	bool UpdateTransitionOut(float aTime);
-	void DrawTransitionOut();
-
-	bool isInTransition;
-	int transitionAlpha;
 
 	Menu* myStartMenu;
 	BackgroundAsset* myBackgroundAsset;
 	UIAsset* myUIAsset;
+	SDL_Cursor* myCursor;
 
 	StartStateShipEntity* ship;
 
-	SDL_Cursor* myCursor;
+	std::string playStateString = "GameLost";
 
-	static void onPressCallback(int index, void* context) { ((StartState*)context)->isInTransition = true; }
+	static bool onPressCallback(int index, void* context) {
+		StartState* state = ((StartState*)context);
+		if (state->myStartMenu->myCurrentSelection == 0)
+			state->myStateMachine->Push("Transition", &state->playStateString);
+		else
+			return false;
+	}
 };
 
 #endif // STARTSTATE_H

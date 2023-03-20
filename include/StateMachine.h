@@ -19,7 +19,7 @@ public:
 	bool Draw();
 	void Add(BaseState* aBaseState);
 
-	void Push(std::string stateName);
+	void Push(std::string stateName, void* params = nullptr);
 	void Pop();
 
 private:

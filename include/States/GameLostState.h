@@ -12,19 +12,15 @@ public:
 
 	bool Enter(void* params);
 	bool Update(float aTime);
-	bool UpdateInput();
+	bool HandleEvents(SDL_Event* event);
 	bool Draw();
 	bool Exit();
 
 
 private:
-	void UpdateTransitionOut(float aTime);
-	void DrawTransitionOut();
-
-	bool isInTransition;
-	int transitionAlpha;
-
 	Texture* youLostText;
+
+	std::string startStateString = "Start";
 };
 
 #endif // GAMELOSTSTATE_H

@@ -21,6 +21,8 @@ public:
 	static float deg2rad(float deg);
 
 	static SDL_FPoint ClampMagnitude(SDL_FPoint& a, float b);
+
+	static SDL_FPoint Lerp(SDL_FPoint& a, SDL_FPoint& b, float t);
 };
 
 #endif // SDLMATHS_H

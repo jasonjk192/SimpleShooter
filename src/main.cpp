@@ -4,6 +4,7 @@
 #include "States/StartState.h"
 #include "States/GameLostState.h"
 #include "States/GameWonState.h"
+#include "States/TransitionState.h"
 
 #include "SDL_image.h"
 #include "SDL_ttf.h"
@@ -51,6 +52,7 @@ int main(int argc, char* argv[])
 	stateMachine->Add(new StartState(stateMachine, drawer));
 	stateMachine->Add(new GameLostState(stateMachine, drawer));
 	stateMachine->Add(new GameWonState(stateMachine, drawer));
+	stateMachine->Add(new TransitionState(stateMachine, drawer));
 	stateMachine->Change("Start");
 
 	float lastFrame = (float)SDL_GetTicks() * 0.001f;
@@ -61,7 +63,8 @@ int main(int argc, char* argv[])
 		float currentFrame = (float)SDL_GetTicks() * 0.001f;
 		float elapsedTime = currentFrame - lastFrame;
 
-		stateMachine->HandleEvents(&event);
+		if (!stateMachine->HandleEvents(&event))
+			break;
 		if (!stateMachine->Update(elapsedTime))
 			break;
 

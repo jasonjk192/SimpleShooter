@@ -121,7 +121,8 @@ BehaviourTree::NodeStatus StartStateShipEntity::MoveVel(float aTime, void* ship,
 
 	if (!myShip->hasReachedDestination)
 	{
-		myShip->myDirection = SDLMaths::Normalize(SDLMaths::Direction(myShip->myPosition, myShip->myDestination));
+		SDL_FPoint newDirection = SDLMaths::Normalize(SDLMaths::Direction(myShip->myPosition, myShip->myDestination));
+		myShip->myDirection = SDLMaths::Lerp(myShip->myDirection, newDirection, aTime );
 		myShip->myVelocity = { myShip->myVelocity.x + myShip->myDirection.x , myShip->myVelocity.y + myShip->myDirection.y };
 		myShip->myVelocity = SDLMaths::ClampMagnitude(myShip->myVelocity, myShip->myMaxSpeed);
 		myShip->myPosition = { myShip->myPosition.x + aTime * myShip->myVelocity.x * myShip->myMoveSpeedMult , myShip->myPosition.y + aTime * myShip->myVelocity.y * myShip->myMoveSpeedMult };

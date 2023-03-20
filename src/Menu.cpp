@@ -70,18 +70,20 @@ bool Menu::HandleEvents(SDL_Event* event)
         break;
 
     case SDL_MOUSEBUTTONUP:
+        bool callbackStatus = true;
         if (isItemSelected)
-            OnItemSelected(myCurrentSelection);
+            callbackStatus = OnItemSelected(myCurrentSelection);
         isItemSelected = false;
+        return callbackStatus;
         break;
     }
     return true;
 }
 
-void Menu::OnItemSelected(int index)
+bool Menu::OnItemSelected(int index)
 {
     if (callback != nullptr)
-        callback(index, myContext);
+        return callback(index, myContext);
 }
 
 void Menu::Draw(int anIndex)

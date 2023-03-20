@@ -44,3 +44,8 @@ SDL_FPoint SDLMaths::ClampMagnitude(SDL_FPoint& a, float b)
 	else
 		return a;
 }
+
+SDL_FPoint SDLMaths::Lerp(SDL_FPoint& a, SDL_FPoint& b, float t)
+{
+	return SDL_FPoint{ a.x + (b.x - a.x) * t, a.y + (b.y - a.y) * t };
+}

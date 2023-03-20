@@ -63,11 +63,20 @@ public:
 	class RandomSelector : public CompositeNode {  // RandomSelector operates as a Selector, but in a random order instead of from first child to last child.
 	public:
 		virtual NodeStatus run(float aTime) override {
-			for (Node* child : childrenShuffled()) {  // The order is shuffled
-				if (child->run(aTime) == NodeStatus::SUCCESS)
-					return NodeStatus::SUCCESS;
+			int index = 0;
+			tree->currentNodeStack.pop_back();
+			NodeStatus status = NodeStatus::FAILED;
+			for (; index < childrenShuffled().size(); index++)
+			{
+				auto child = childrenShuffled()[index];
+				tree->currentNodeStack.push_back(child);
+				status = child->run(aTime); // If failed then keep running
+				if (status == NodeStatus::SUCCESS) { tree->currentNodeStack.push_back(child); return NodeStatus::SUCCESS; }  // If success then return status
+				else if (status == NodeStatus::RUNNING) break; // If running then we will add all the remaining children to the stack
 			}
-			return NodeStatus::FAILED;
+			for (int i = childrenShuffled().size() - 1; i >= index; i--) // Add in reverse order so that the last element is at bottom of stack and gets executed lsat from amongst the children
+				tree->currentNodeStack.push_back(childrenShuffled()[i]);
+			return status;  // All children failed so the entire run() operation fails.
 		}
 	};
 
@@ -108,7 +117,12 @@ public:
 
 	class Inverter : public DecoratorNode {  // Inverts the result of the child. A child fails and it will return success to its parent, or a child succeeds and it will return failure to the parent.
 	private:
-		virtual NodeStatus run(float aTime) override { NodeStatus status = getChild()->run(aTime); if (status == NodeStatus::FAILED) return NodeStatus::SUCCESS; else if (status == NodeStatus::SUCCESS) return NodeStatus::FAILED; return NodeStatus::RUNNING; }
+		virtual NodeStatus run(float aTime) override { 
+			tree->currentNodeStack.pop_back();
+			tree->currentNodeStack.push_back(getChild());
+			NodeStatus status = getChild()->run(aTime);
+			if (status == NodeStatus::FAILED) return NodeStatus::SUCCESS; else if (status == NodeStatus::SUCCESS) return NodeStatus::FAILED; return NodeStatus::RUNNING;
+		}
 	};
 
 	class Repeater : public DecoratorNode {  // A repeater will reprocess its child node each time its child returns a result. These are often used at the very base of the tree, to make the tree to run continuously. Repeaters may optionally run their children a set number of times before returning to their parent.
@@ -117,6 +131,8 @@ public:
 		static const int NOT_FOUND = -1;
 		Repeater(int num = NOT_FOUND) : numRepeats(num) {}  // By default, never terminate.
 		virtual NodeStatus run(float aTime) override {
+			tree->currentNodeStack.pop_back();
+			tree->currentNodeStack.push_back(getChild());
 			if (numRepeats == NOT_FOUND)
 				while (true) getChild()->run(aTime);
 			else {
@@ -159,18 +175,13 @@ public:
 				currentNodeStack.clear();
 				currentNodeStack.push_back(root);
 			}
-			else if (status == NodeStatus::SUCCESS)
-			{
-				currentNodeStack.pop_back();
-			}
+			else if (status == NodeStatus::SUCCESS) { currentNodeStack.pop_back(); }
 			else { break; }
 		}
 		while (status == NodeStatus::SUCCESS && !currentNodeStack.empty());
-		if (currentNodeStack.empty())
-			currentNodeStack.push_back(root);
+		if (currentNodeStack.empty()) currentNodeStack.push_back(root);
 		return true;
 	}
-	void addToStack(Node* node) { currentNodeStack.push_back(node); }
 	SDL_Event* getEvent() { return currentEvent; }
 };
 

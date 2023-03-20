@@ -1,12 +1,11 @@
 #include "States/StartState.h"
 
 StartState::StartState(StateMachine* aStateMachine, Drawer* aDrawer):
-    isInTransition(false),
-    transitionAlpha(0)
+    BaseState(aStateMachine, aDrawer, "Start"),
+    myCursor(nullptr),
+    myStartMenu(nullptr),
+    ship(nullptr)
 {
-    name = "Start";
-    myStateMachine = aStateMachine;
-    myDrawer = aDrawer;
     myBackgroundAsset = &BackgroundAsset::GetInstance();
     myUIAsset = &UIAsset::GetInstance();
 }  
@@ -41,40 +40,35 @@ bool StartState::Enter(void* params)
 
 bool StartState::Update(float aTime)
 {
-    if (isInTransition)
-        return UpdateTransitionOut(aTime);
-    if (!UpdateInput())
-        return false;
-
     ship->Update(aTime);
-
-    int x, y;
-    SDL_GetMouseState(&x, &y);
-
     return true;
-}
-
-bool StartState::UpdateInput()
-{
-	const Uint8* keystate = SDL_GetKeyboardState(NULL);
-	if (keystate[SDL_SCANCODE_ESCAPE])
-		return false;
-    else if (keystate[SDL_SCANCODE_UP])
-        myStartMenu->myCurrentSelection = myStartMenu->myCurrentSelection == 0 ? 0 : --myStartMenu->myCurrentSelection;
-    else if(keystate[SDL_SCANCODE_DOWN])
-        myStartMenu->myCurrentSelection = myStartMenu->myCurrentSelection == 1 ? 1 : ++myStartMenu->myCurrentSelection;
-    else if (keystate[SDL_SCANCODE_RETURN])
-        isInTransition = true;
-	return true;
 }
 
 bool StartState::HandleEvents(SDL_Event* event)
 {
-    ship->HandleEvents(event);
-    if (!isInTransition)
+    const Uint8* keystate = SDL_GetKeyboardState(NULL);
+    if (keystate[SDL_SCANCODE_ESCAPE])
+        return false;
+    else if (keystate[SDL_SCANCODE_UP])
+        myStartMenu->SelectPrevious();
+    else if (keystate[SDL_SCANCODE_DOWN])
+        myStartMenu->SelectNext();
+    else if (keystate[SDL_SCANCODE_RETURN])
     {
-        myStartMenu->HandleEvents(event);
+        if (myStartMenu->myCurrentSelection == 0)
+        {
+            myStateMachine->Push("Transition", &playStateString);
+            return true;
+        }
+        else
+            return false;
     }
+
+    ship->HandleEvents(event);
+
+    if(!myStartMenu->HandleEvents(event))
+        return false;
+
     return true;
 }
 
@@ -90,44 +84,16 @@ bool StartState::Draw()
 
     ship->Draw();
 
-    if (isInTransition)
-        DrawTransitionOut();
-
     return true;
 }
 
 bool StartState::Exit()
 {
     myStartMenu->Clear();
-    isInTransition = false;
-    transitionAlpha = 0;
     SDL_FreeCursor(myCursor);
 
     delete myStartMenu;
     delete ship;
 
     return true;
-}
-
-bool StartState::UpdateTransitionOut(float aTime)
-{
-    transitionAlpha += 2;
-    if (transitionAlpha >= 255)
-        if (myStartMenu->myCurrentSelection == 0)
-            myStateMachine->Change("GameLost");
-        else
-            return false;
-    return true;
-}
-
-void StartState::DrawTransitionOut()
-{
-    int winW, winH;
-    myDrawer->GetWindowSize(&winW, &winH);
-    myDrawer->SetColor(255, 255, 0, 255);
-    myDrawer->SetColor(0, 0, 0, transitionAlpha);
-    myDrawer->SetBlendMode(1);
-    myDrawer->DrawRect(0, 0, winW, winH, true);
-    myDrawer->SetBlendMode(0);
-    myDrawer->SetColor(0, 0, 0, 255);
 }
