@@ -19,7 +19,7 @@ public:
 	void SetMass(float aMass) { myMass = aMass; }
 	void AddForce(SDL_FPoint& aForce) { myAcceleration = { myAcceleration.x + aForce.x / myMass, myAcceleration.y + aForce.y / myMass }; }
 
-	bool Update(float aTime);
+	bool Update(float aTime) { return true; }
 
 protected:
 

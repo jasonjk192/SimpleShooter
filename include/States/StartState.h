@@ -33,7 +33,7 @@ private:
 
 	StartStateShipEntity* ship;
 
-	std::string playStateString = "GameLost";
+	std::string playStateString = "Play";
 
 	static bool onPressCallback(int index, void* context) {
 		StartState* state = ((StartState*)context);

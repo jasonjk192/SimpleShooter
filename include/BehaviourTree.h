@@ -20,7 +20,7 @@ public:
 
 	class Node {  // This class represents each node in the behaviour tree.
 	protected:
-		BehaviourTree* tree;
+		BehaviourTree* tree = nullptr;
 	public:
 		virtual NodeStatus run(float aTime) = 0;
 		virtual void setTree(BehaviourTree* bt) { tree = bt; }

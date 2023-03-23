@@ -11,7 +11,7 @@ StartStateShipEntity::StartStateShipEntity(const SDL_FPoint& aPosition, Texture*
 	conditionalMoveSequence.addChild(&followCursorSequence);
 	conditionalMoveSequence.addChild(&randomMoveSequence);
 	myTree->setRootChild(&conditionalMoveSequence);
-	myName = "AIShipEntity";
+	myName = "StartStateShipEntity";
 
 	ParticleSystem::SystemParams params;
 	params.myLifetime = 2;

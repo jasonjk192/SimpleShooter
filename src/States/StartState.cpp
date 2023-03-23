@@ -75,7 +75,7 @@ bool StartState::HandleEvents(SDL_Event* event)
 bool StartState::Draw()
 {
     myDrawer->SetScale(5);
-    myDrawer->Draw(myBackgroundAsset->GetBackgroundTexture(0), 0, 0);
+    myDrawer->Draw(myBackgroundAsset->GetBackgroundTexture(0), myBackgroundAsset->GetBackgroundTexture(0)->GetSize()->x * 2, myBackgroundAsset->GetBackgroundTexture(0)->GetSize()->y * 2);
     myDrawer->SetScale(1);
 
     myDrawer->SetColor(255, 255, 0, 255);

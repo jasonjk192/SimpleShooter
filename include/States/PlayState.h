@@ -1,22 +1,26 @@
-#pragma once
+#ifndef PLAYSTATE_H
+#define PLAYSTATE_H
 
-#include "GameState.h"
 #include "StateMachine.h"
-#include "Pacman.h"
-#include "Drawer.h"
+#include "World.h"
 
-class PlayState : public GameState
+#include "BaseState.h"
+
+class PlayState : public BaseState
 {
 public:
 	PlayState(StateMachine* aStateMachine, Drawer* aDrawer);
-	~PlayState(void) {};
+	~PlayState(void);
 
 	bool Enter(void* params);
 	bool Update(float aTime);
-	bool Draw(Drawer* aDrawer);
+	bool HandleEvents(SDL_Event* event);
+	bool Draw();
+	bool Exit();
+
 private:
-	void TransitionIn(float aTime);
-	int myCurrentMenuItem;
-	Pacman* pacman;
-	Drawer* myDrawer;
+	World* myWorld;
+
 };
+
+#endif // PLAYSTATE_H

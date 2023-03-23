@@ -2,6 +2,7 @@
 #include "Drawer.h"
 
 #include "States/StartState.h"
+#include "States/PlayState.h"
 #include "States/GameLostState.h"
 #include "States/GameWonState.h"
 #include "States/TransitionState.h"
@@ -50,6 +51,7 @@ int main(int argc, char* argv[])
 
 	StateMachine* stateMachine = new StateMachine();
 	stateMachine->Add(new StartState(stateMachine, drawer));
+	stateMachine->Add(new PlayState(stateMachine, drawer));
 	stateMachine->Add(new GameLostState(stateMachine, drawer));
 	stateMachine->Add(new GameWonState(stateMachine, drawer));
 	stateMachine->Add(new TransitionState(stateMachine, drawer));
@@ -58,6 +60,7 @@ int main(int argc, char* argv[])
 	float lastFrame = (float)SDL_GetTicks() * 0.001f;
 
 	SDL_Event event;
+	
 	while (SDL_PollEvent(&event) >= 0)
 	{
 		float currentFrame = (float)SDL_GetTicks() * 0.001f;

@@ -1,11 +1,8 @@
 #include "States/GameWonState.h"
 
-GameWonState::GameWonState(StateMachine* aStateMachine, Drawer* aDrawer)
-{
-	name = "GameWon";
-	myStateMachine = aStateMachine;
-	myDrawer = aDrawer;
-}
+GameWonState::GameWonState(StateMachine* aStateMachine, Drawer* aDrawer):
+	BaseState(aStateMachine, aDrawer, "GameWon")
+{}
 
 bool GameWonState::Enter(void* params)
 {

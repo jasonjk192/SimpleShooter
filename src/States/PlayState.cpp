@@ -1,32 +1,43 @@
-#include "PlayState.h"
+#include "States/PlayState.h"
 
-PlayState::PlayState(StateMachine* aStateMachine, Drawer *aDrawer)
+PlayState::PlayState(StateMachine* aStateMachine, Drawer *aDrawer):
+	BaseState(aStateMachine, aDrawer, "Play"),
+	myWorld(nullptr)
 {
-	name = "Play";
-	myStateMachine = aStateMachine;
-	myDrawer = aDrawer;
 }
+
+PlayState::~PlayState(void)
+{}
 
 bool PlayState::Enter(void* params)
 {
-	myStateMachine->Push("Pause");
-	pacman = Pacman::Create(myStateMachine, myDrawer);
+	myWorld = new World(myStateMachine, myDrawer);
 	return true;
 }
 
 bool PlayState::Update(float aTime)
 {
-	return pacman->Update(aTime);
+	myWorld->Update(aTime);
+	return true;
 }
 
-bool PlayState::Draw(Drawer* aDrawer)
+bool PlayState::HandleEvents(SDL_Event* event)
 {
-	return pacman->Draw();
+	const Uint8* keystate = SDL_GetKeyboardState(NULL);
+	if (keystate[SDL_SCANCODE_ESCAPE])
+		return false;
+	myWorld->HandleEvents(event);
+	return true;
 }
 
-void PlayState::TransitionIn(float aTime)
+bool PlayState::Draw()
 {
-	/*transitionAlpha -= 2;
-	if (transitionAlpha <= 0)
-		myStateMachine->Change("Play");*/
+	myWorld->Draw();
+	return true;
+}
+
+bool PlayState::Exit()
+{
+	delete myWorld;
+	return true;
 }
