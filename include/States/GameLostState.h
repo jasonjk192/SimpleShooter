@@ -20,6 +20,9 @@ public:
 private:
 	Texture* youLostText;
 
+	int myScore;
+	Texture* scoreText;
+
 	std::string startStateString = "Start";
 };
 

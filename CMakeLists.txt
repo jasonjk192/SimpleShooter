@@ -63,7 +63,7 @@ set(PROJECT_SOURCES_WITHOUT_MAIN
 	 "src/StateMachine.cpp;"
 	 "src/Texture.cpp;"
 	 "src/World.cpp"
-	)
+	  "src/Assets/ProjectileAsset.cpp" "src/Entities/HealthPickupEntity.cpp")
 add_executable(${PROJECT_NAME} src/main.cpp ${PROJECT_SOURCES_WITHOUT_MAIN})
 
 # Include files

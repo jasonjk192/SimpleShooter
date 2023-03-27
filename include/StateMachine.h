@@ -6,6 +6,9 @@
 
 #include "Drawer.h"
 #include "States/BaseState.h"
+#include "States/TransitionState.h"
+
+class TransitionState;
 
 class StateMachine
 {
@@ -20,6 +23,7 @@ public:
 	void Add(BaseState* aBaseState);
 
 	void Push(std::string stateName, void* params = nullptr);
+	void Transition(TransitionState* transitionState, std::string stateName, void* params = nullptr);
 	void Pop();
 
 private:

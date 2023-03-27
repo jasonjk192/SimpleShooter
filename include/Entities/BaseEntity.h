@@ -3,6 +3,7 @@
 
 #include <string>
 
+#include "Assets/SDLMaths.h"
 #include "Drawer.h"
 
 class BaseEntity
@@ -19,13 +20,13 @@ public:
 	std::string GetName() const { return myName; }
 	SDL_FPoint GetPosition() const { return myPosition; }
 	float GetScale() const { return myScale; }
-
-	void OnCollision(BaseEntity* anEntity) {}
 	bool IsMarkedForDelete() { return markForDelete; }
 
 	virtual bool HandleEvents(SDL_Event* event) { return true; }
 	virtual bool Update(float aTime) { return true; }
 	virtual void Draw();
+	virtual void OnCollision(BaseEntity* anEntity) {}
+	virtual bool CollidesWith(BaseEntity* anEntity) { return (SDLMaths::Distance(myPosition, anEntity->GetPosition()) < 8.f); }
 
 protected:
 	std::string myName;
@@ -36,7 +37,7 @@ protected:
 
 	float myScale;
 
-	bool markForDelete = false;
+	bool markForDelete;
 };
 
 #endif // BASEENTITY_H

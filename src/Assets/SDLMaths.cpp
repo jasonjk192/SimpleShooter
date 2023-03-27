@@ -21,9 +21,24 @@ float SDLMaths::Magnitude(SDL_FPoint& a)
 	return sqrtf(a.x*a.x + a.y*a.y);
 }
 
+float SDLMaths::Dot(SDL_FPoint& a, SDL_FPoint& b)
+{
+	return a.x * b.x + a.y * b.y;
+}
+
+float SDLMaths::Determinant(SDL_FPoint& a, SDL_FPoint& b)
+{
+	return a.x * b.y - a.y * b.x;
+}
+
 float SDLMaths::Angle(SDL_FPoint& a)
 {
 	return atan2(a.y, a.x);
+}
+
+float SDLMaths::Angle(SDL_FPoint& a, SDL_FPoint& b)
+{
+	return atan2(Determinant(a,b), Dot(a,b));
 }
 
 float SDLMaths::rad2deg(float rad)

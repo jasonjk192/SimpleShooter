@@ -10,19 +10,16 @@ public:
 
 	bool Enter(void* params);
 	bool Update(float aTime);
-	bool UpdateInput();
+	bool HandleEvents(SDL_Event* event);
 	bool Draw();
 	bool Exit();
 
 private:
-	void UpdateTransitionOut(float aTime);
-	void DrawTransitionOut();
-
-	bool isInTransition;
-	int transitionAlpha;
 	int myScore;
 
 	Texture* youWonText;
 	Texture* scoreText;
+
+	std::string startStateString = "Start";
 };
 

@@ -56,33 +56,11 @@ void Drawer::DrawRect(int x, int y, int w, int h, bool isFilled)
 	isFilled ? SDL_RenderFillRect(myRenderer, &rect) : SDL_RenderDrawRect(myRenderer, &rect);
 }
 
-void Drawer::DrawText(const char* aText, const char* aFontFile, int aX, int aY)
+void Drawer::DrawText(const char* aText, const char* aFontFile, int aX, int aY, int aFontSize)
 {
-	TTF_Font* font = TTF_OpenFont(aFontFile, 24);
-	
-	Uint8 r, g, b, a;
-	SDL_GetRenderDrawColor(myRenderer, &r, &g, &b, &a);
-	SDL_Color fg = { r,g,b,a };
-	SDL_Surface* surface = TTF_RenderText_Solid(font, aText, fg);
-
-	SDL_Texture* optimizedSurface = SDL_CreateTextureFromSurface(myRenderer, surface);
-
-	SDL_Rect sizeRect;
-	sizeRect.x = 0;
-	sizeRect.y = 0;
-	sizeRect.w = surface->w;
-	sizeRect.h = surface->h;
-
-	SDL_Rect posRect;
-	posRect.x = aX;
-	posRect.y = aY;
-	posRect.w = sizeRect.w;
-	posRect.h = sizeRect.h;
-
-	SDL_RenderCopy(myRenderer, optimizedSurface, &sizeRect, &posRect);
-	SDL_DestroyTexture(optimizedSurface);
-	SDL_FreeSurface(surface);
-	TTF_CloseFont(font);
+	Texture* text = new Texture(myRenderer, aText, aFontFile, aFontSize);
+	Draw(text, aX, aY);
+	delete text;
 }
 
 void Drawer::SetColor(Uint8 r, Uint8 g, Uint8 b, Uint8 a)

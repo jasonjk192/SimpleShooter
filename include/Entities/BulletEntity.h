@@ -15,16 +15,33 @@ public:
 	~BulletEntity(void);
 
 	bool Update(float aTime);
+	void Draw();
 	void OnCollision(BaseEntity* anEntity);
 
 	void SetVelocity(SDL_FPoint& aVelocity) { myVelocity = aVelocity; }
 	void SetOwner(BaseEntity* anOwner) { myOwner = anOwner; }
 
-private:
+protected:
 	BaseEntity* myOwner;
 
 	float myLifetime;
 	World* myWorld;
+};
+
+class FriendlyBulletEntity : public BulletEntity
+{
+public:
+	FriendlyBulletEntity(const SDL_FPoint& aPosition, Texture* aTexture, Drawer* aDrawer, World* aWorld) : BulletEntity(aPosition, aTexture, aDrawer, aWorld) {}
+	~FriendlyBulletEntity(void) {}
+	void OnCollision(BaseEntity* anEntity);
+};
+
+class EnemyBulletEntity : public BulletEntity
+{
+public:
+	EnemyBulletEntity(const SDL_FPoint& aPosition, Texture* aTexture, Drawer* aDrawer, World* aWorld) : BulletEntity(aPosition, aTexture, aDrawer, aWorld) {}
+	~EnemyBulletEntity(void) {}
+	void OnCollision(BaseEntity* anEntity);
 };
 
 #endif // BULLETENTITY_H

@@ -1,9 +1,15 @@
 #include "Entities/PlayerShipEntity.h"
 
 PlayerShipEntity::PlayerShipEntity(const SDL_FPoint& aPosition, Texture* aTexture, Drawer* aDrawer, World* aWorld):
-	DynamicEntity(aPosition, aTexture, aDrawer),
+	GameCharacterEntity(aPosition, aTexture, aDrawer),
 	myWorld(aWorld)
 {
+	myName = "PlayerShip";
+	myShootCooldown = 0.1f;
+	currentShootCooldown = 0.f;
+	myMaxHealth = 10;
+	currentHealth = 3;
+	myScore = 0;
 }
 
 PlayerShipEntity::~PlayerShipEntity(void)
@@ -31,6 +37,7 @@ bool PlayerShipEntity::HandleEvents(SDL_Event* event)
 bool PlayerShipEntity::Update(float aTime)
 {
 	myDirection = SDLMaths::Normalize(myVelocity);
+	myVelocity = SDLMaths::ClampMagnitude(myVelocity, myMaxSpeed);
 	myPosition = { myPosition.x + aTime * myVelocity.x * myMoveSpeedMult , myPosition.y + aTime * myVelocity.y * myMoveSpeedMult };
 	currentShootCooldown -= aTime;
 	currentShootCooldown = std::max(currentShootCooldown, 0.f);
@@ -44,10 +51,15 @@ void PlayerShipEntity::Draw()
 	myDrawer->SetScale(1.f);
 }
 
+void PlayerShipEntity::OnCollision(BaseEntity* anEntity)
+{
+	
+}
+
 void PlayerShipEntity::Shoot()
 {
 	currentShootCooldown = myShootCooldown;
-	auto bullet = myWorld->SpawnEntity<BulletEntity>(myPosition, MiscAsset::GetInstance().GetIconTexture(0));
+	auto bullet = myWorld->SpawnEntity<FriendlyBulletEntity>(myPosition, ProjectileAsset::GetInstance().GetProjectileTexture(7));
 	bullet->SetOwner(this);
 	bullet->SetMoveSpeedMult(1000);
 	bullet->SetVelocity(myDirection);

@@ -5,7 +5,6 @@
 #include "States/PlayState.h"
 #include "States/GameLostState.h"
 #include "States/GameWonState.h"
-#include "States/TransitionState.h"
 
 #include "SDL_image.h"
 #include "SDL_ttf.h"
@@ -48,13 +47,13 @@ int main(int argc, char* argv[])
 	BackgroundAsset* bgAsset = &BackgroundAsset::GetInstance(drawer);
 	ShipAsset* shipAsset = &ShipAsset::GetInstance(drawer);
 	MiscAsset* miscAsset = &MiscAsset::GetInstance(drawer);
+	ProjectileAsset* projectileAsset = &ProjectileAsset::GetInstance(drawer);
 
 	StateMachine* stateMachine = new StateMachine();
 	stateMachine->Add(new StartState(stateMachine, drawer));
 	stateMachine->Add(new PlayState(stateMachine, drawer));
 	stateMachine->Add(new GameLostState(stateMachine, drawer));
 	stateMachine->Add(new GameWonState(stateMachine, drawer));
-	stateMachine->Add(new TransitionState(stateMachine, drawer));
 	stateMachine->Change("Start");
 
 	float lastFrame = (float)SDL_GetTicks() * 0.001f;

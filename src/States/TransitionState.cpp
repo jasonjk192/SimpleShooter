@@ -2,13 +2,15 @@
 
 TransitionState::TransitionState(StateMachine* aStateMachine, Drawer* aDrawer):
 	BaseState(aStateMachine, aDrawer, "Transition"),
-	transitionAlpha(0)
+	transitionAlpha(0),
+	nextStateParams(nullptr)
 {}
 
 bool TransitionState::Enter(void* params)
 {
 	transitionAlpha = 0;
 	nextState = *(std::string*)params;
+	nextStateParams = nullptr;
 	return true;
 }
 
@@ -19,7 +21,7 @@ bool TransitionState::Update(float aTime)
 	{
 		myStateMachine->Pop();
 		myStateMachine->Pop();
-		myStateMachine->Push(nextState);
+		myStateMachine->Push(nextState, nextStateParams);
 	}
 	return true;
 }

@@ -5,7 +5,8 @@ BaseEntity::BaseEntity(const SDL_FPoint& aPosition, Texture* aTexture, Drawer* a
 	myDrawer(aDrawer),
 	myTexture(aTexture),
 	myName("BaseEntity"),
-	myScale(1.f)
+	myScale(1.f),
+	markForDelete(false)
 {}
 
 BaseEntity::~BaseEntity(void)

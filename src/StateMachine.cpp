@@ -1,5 +1,7 @@
 #include "StateMachine.h"
 
+#include <iostream>
+
 StateMachine::StateMachine()
 {}
 
@@ -51,6 +53,16 @@ void StateMachine::Push(std::string stateName, void* params)
 		return;
 	state->Enter(params);
 	myCurrentStates.push_back(state);
+}
+
+void StateMachine::Transition(TransitionState* transitionState, std::string stateName, void* params)
+{
+	if (transitionState)
+	{
+		transitionState->Enter(&stateName);
+		transitionState->SetNextStateParams(params);
+		myCurrentStates.push_back(transitionState);
+	}
 }
 
 void StateMachine::Pop()

@@ -14,9 +14,12 @@ public:
 	bool Update(float aTime);
 	bool Draw();
 
+	void SetNextStateParams(void* aStateParams) { nextStateParams = aStateParams; }
+
 private:
 	float transitionAlpha;
 	std::string nextState;
+	void* nextStateParams;
 };
 
 #endif // TRANSITIONSTATE_H

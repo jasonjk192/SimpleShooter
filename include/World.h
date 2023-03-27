@@ -11,6 +11,7 @@
 
 #include "Entities/PlayerShipEntity.h"
 #include "Entities/EnemyShipEntity.h"
+#include "Entities/HealthPickupEntity.h"
 
 #include <vector>
 
@@ -38,9 +39,31 @@ public:
 		return nullptr;
 	};
 
+	BaseEntity* GetNearestEntity(BaseEntity* anEntity)
+	{
+		float nearestDistance = 9999.f;
+		BaseEntity* nearestEntity = nullptr;
+		for (auto entity : worldEntities)
+		{
+			if (entity == anEntity) continue;
+			if (float distance = SDLMaths::Distance(anEntity->GetPosition(), entity->GetPosition()) < nearestDistance)
+			{
+				nearestDistance = distance;
+				nearestEntity = entity;
+			}
+		}
+		return nearestEntity;
+	}
+
+	BaseEntity* GetPlayerShipEntity() { return worldEntities[0]; }
+
 private:
+	void CheckPlayerStatus();
+	void SpawnEnemyEntities();
+	void SpawnPickupEntities();
 	void CheckCollisions();
 	void DespawnEntities();
+	void DrawUI();
 
 	StateMachine* myStateMachine;
 	Drawer* myDrawer;
@@ -54,6 +77,13 @@ private:
 
 	float myEnemySpawnerCooldown = 5.f;
 	float currentEnemySpawnerCooldown = 0.f;
+
+	float myPickupSpawnerCooldown = 30.f;
+	float currentPickupSpawnerCooldown = 0.f;
+
+	SDL_Rect worldBoundary;
+
+	float scrollHorizontal = 0;
 };
 
 #endif // WORLD_H

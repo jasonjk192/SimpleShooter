@@ -20,7 +20,7 @@ public:
 	void Draw(Texture* aTexture, SDL_Rect* aSrcRect = nullptr, SDL_Rect* aDstRect = nullptr, double aRotationAngle = 0, SDL_RendererFlip aRenderFlip = SDL_FLIP_NONE);
 	void DrawLine(int aX, int aY, int bX, int bY);
 	void DrawRect(int x, int y, int w, int h, bool isFilled = false);
-	void DrawText(const char* aText, const char* aFontFile, int aX, int aY);
+	void DrawText(const char* aText, const char* aFontFile, int aX, int aY, int aFontSize = 24);
 
 	void SetColor(Uint8 r, Uint8 g, Uint8 b, Uint8 a);
 	void SetBlendMode(int blendMode);

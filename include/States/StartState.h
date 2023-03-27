@@ -33,12 +33,10 @@ private:
 
 	StartStateShipEntity* ship;
 
-	std::string playStateString = "Play";
-
 	static bool onPressCallback(int index, void* context) {
 		StartState* state = ((StartState*)context);
 		if (state->myStartMenu->myCurrentSelection == 0)
-			state->myStateMachine->Push("Transition", &state->playStateString);
+			state->myStateMachine->Transition(new TransitionState(state->myStateMachine, state->myDrawer), "Play");
 		else
 			return false;
 	}

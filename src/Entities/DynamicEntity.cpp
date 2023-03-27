@@ -2,7 +2,7 @@
 
 DynamicEntity::DynamicEntity(const SDL_FPoint& aPosition, Texture* aTexture, Drawer* aDrawer):
 	BaseEntity(aPosition, aTexture, aDrawer),
-	myDirection({ 0,0 }),
+	myDirection({ 1,0 }),
 	myVelocity({0,0}),
 	myAcceleration({0,0}),
 	myMoveSpeedMult(1.f),

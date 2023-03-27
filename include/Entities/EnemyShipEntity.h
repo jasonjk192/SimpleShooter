@@ -4,6 +4,7 @@
 #include "Assets/SDLMaths.h"
 
 #include "Assets/MiscAsset.h"
+#include "Assets/ProjectileAsset.h"
 
 #include "BulletEntity.h"
 #include "AIShipEntity.h"
@@ -21,21 +22,26 @@ public:
 	bool HandleEvents(SDL_Event* event);
 	bool Update(float aTime);
 	void Draw();
+	void OnCollision(BaseEntity* anEntity);
 
 private:
-	void Shoot();
-
 	World* myWorld;
-
-	float myShootCooldown = 0.5f;
-	float currentShootCooldown = 0.f;
 
 	static BehaviourTree::NodeStatus Move(float aTime, void* ship, SDL_Event* event);
 	static BehaviourTree::NodeStatus PickRandom(float aTime, void* ship, SDL_Event* event);
+	static BehaviourTree::NodeStatus Nearby(float aTime, void* ship, SDL_Event* event);
+	static BehaviourTree::NodeStatus Follow(float aTime, void* ship, SDL_Event* event);
+	static BehaviourTree::NodeStatus Shoot(float aTime, void* ship, SDL_Event* event);
 
 	BehaviourTree::Sequence randomMoveSequence;
+	BehaviourTree::Sequence followAndShootSequence;
+	BehaviourTree::Selector followOrRandomSelector;
+
 	Action PickRandomDestination = Action(*PickRandom, this);
 	Action MoveToDestination = Action(*Move, this);
+	Action GetNearbyShip = Action(*Nearby, this);
+	Action FollowShip = Action(*Follow, this);
+	Action ShootAtShip = Action(*Shoot, this);
 };
 
 #endif // ENEMYSHIPENTITY_H

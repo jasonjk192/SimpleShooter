@@ -3,7 +3,7 @@
 #include <iostream>
 
 AIShipEntity::AIShipEntity(const SDL_FPoint& aPosition, Texture* aTexture, Drawer* aDrawer) :
-	DynamicEntity(aPosition, aTexture, aDrawer),
+	GameCharacterEntity(aPosition, aTexture, aDrawer),
 	myDestination({ 0,0 }),
 	hasReachedDestination(true),
 	myTree(nullptr)

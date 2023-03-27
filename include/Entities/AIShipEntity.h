@@ -3,11 +3,11 @@
 
 #include "Assets/SDLMaths.h"
 
-#include "DynamicEntity.h"
+#include "GameCharacterEntity.h"
 
 #include "BehaviourTree.h"
 
-class AIShipEntity : public DynamicEntity
+class AIShipEntity : public GameCharacterEntity
 {
 public:
 	AIShipEntity(const SDL_FPoint& aPosition, Texture* aTexture, Drawer* aDrawer);
@@ -21,6 +21,7 @@ public:
 	void SetBehaviourTree(BehaviourTree* aTree) { myTree = aTree; }
 	
 	bool HasReachedDestination() { return hasReachedDestination; }
+	SDL_FPoint GetDestination() { return myDestination; }
 
 protected:
 

@@ -14,7 +14,13 @@ public:
 
 	static float Magnitude(SDL_FPoint& a);
 
+	static float Dot(SDL_FPoint& a, SDL_FPoint& b);
+
+	static float Determinant(SDL_FPoint& a, SDL_FPoint& b);
+
 	static float Angle(SDL_FPoint& a);
+
+	static float Angle(SDL_FPoint& a, SDL_FPoint& b);
 
 	static float rad2deg(float rad);
 

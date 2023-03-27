@@ -1,5 +1,7 @@
 #include "States/StartState.h"
 
+#include "States/TransitionState.h"
+
 StartState::StartState(StateMachine* aStateMachine, Drawer* aDrawer):
     BaseState(aStateMachine, aDrawer, "Start"),
     myCursor(nullptr),
@@ -57,7 +59,7 @@ bool StartState::HandleEvents(SDL_Event* event)
     {
         if (myStartMenu->myCurrentSelection == 0)
         {
-            myStateMachine->Push("Transition", &playStateString);
+            myStateMachine->Transition(new TransitionState(myStateMachine, myDrawer), "Play");
             return true;
         }
         else

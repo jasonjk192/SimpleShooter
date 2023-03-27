@@ -33,11 +33,11 @@ Texture::Texture(SDL_Renderer* aRenderer, const char* anImage) :
 	SDL_FreeSurface(surface);
 }
 
-Texture::Texture(SDL_Renderer* aRenderer, const char* aText, const char* aFontFile) :
+Texture::Texture(SDL_Renderer* aRenderer, const char* aText, const char* aFontFile, int aFontSize) :
 	texture(nullptr),
 	size(nullptr)
 {
-	TTF_Font* font = TTF_OpenFont(aFontFile, 24);
+	TTF_Font* font = TTF_OpenFont(aFontFile, aFontSize);
 	if (!font)
 	{
 		std::cout << "Cannot read font file!" << std::endl;
