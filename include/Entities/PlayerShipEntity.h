@@ -10,6 +10,8 @@
 
 #include "World.h"
 
+#include <SDL_mixer.h>
+
 class World;
 
 class PlayerShipEntity : public GameCharacterEntity
@@ -32,6 +34,8 @@ private:
 	World* myWorld;
 
 	int myScore;
+
+	Mix_Chunk* laserSound;
 };
 
 #endif // PLAYERSHIPENTITY_H

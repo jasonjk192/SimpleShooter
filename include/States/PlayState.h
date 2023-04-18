@@ -4,7 +4,9 @@
 #include "StateMachine.h"
 #include "World.h"
 
-#include "BaseState.h"
+#include "States/GamePausedState.h"
+
+class World;
 
 class PlayState : public BaseState
 {
@@ -20,7 +22,6 @@ public:
 
 private:
 	World* myWorld;
-
 };
 
 #endif // PLAYSTATE_H

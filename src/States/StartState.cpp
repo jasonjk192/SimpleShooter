@@ -1,7 +1,5 @@
 #include "States/StartState.h"
 
-#include "States/TransitionState.h"
-
 StartState::StartState(StateMachine* aStateMachine, Drawer* aDrawer):
     BaseState(aStateMachine, aDrawer, "Start"),
     myCursor(nullptr),
@@ -12,6 +10,10 @@ StartState::StartState(StateMachine* aStateMachine, Drawer* aDrawer):
     myUIAsset = &UIAsset::GetInstance();
 }  
 
+StartState::~StartState()
+{
+}
+
 bool StartState::Enter(void* params)
 {
     myStartMenu = new Menu(myDrawer);
@@ -21,9 +23,8 @@ bool StartState::Enter(void* params)
     myStartMenu->myCurrentSelection = 0;
     myStartMenu->SetCallback(&onPressCallback, this);
 
-    int winW, winH;
-    myDrawer->GetWindowSize(&winW, &winH);
-    myStartMenu->SetOffset((winW - myStartMenu->GetMenuWidth()) / 2, (winH - myStartMenu->GetMenuHeight()) / 2);
+    SDL_Point windowSize = myDrawer->GetWindowSize();
+    myStartMenu->SetOffset((windowSize.x - myStartMenu->GetMenuWidth()) / 2, (windowSize.y - myStartMenu->GetMenuHeight()) / 2);
     myStartMenu->SetSpacing(5);
 
     SDL_ShowCursor(SDL_ENABLE);
@@ -32,7 +33,7 @@ bool StartState::Enter(void* params)
     myCursor = SDL_CreateColorCursor(surface, 0 , 0);
     SDL_SetCursor(myCursor);
 
-    ship = new StartStateShipEntity({ (float)(std::rand() % winW), (float)(std::rand() % winH) }, ShipAsset::GetInstance().GetPlayerTexture(4), myDrawer);
+    ship = new StartStateShipEntity({ (float)(std::rand() % windowSize.x), (float)(std::rand() % windowSize.y) }, ShipAsset::GetInstance().GetPlayerTexture(4), myDrawer);
     ship->SetMaxSpeed(30);
     ship->SetMaxAcceleration(10);
     ship->SetScale(2.f);
@@ -59,7 +60,7 @@ bool StartState::HandleEvents(SDL_Event* event)
     {
         if (myStartMenu->myCurrentSelection == 0)
         {
-            myStateMachine->Transition(new TransitionState(myStateMachine, myDrawer), "Play");
+            myStateMachine->Push(new TransitionState(myStateMachine, myDrawer, new PlayState(myStateMachine, myDrawer)));
             return true;
         }
         else
@@ -98,4 +99,13 @@ bool StartState::Exit()
     delete ship;
 
     return true;
+}
+
+bool StartState::onPressCallback(int index, void* context)
+{
+    StartState* state = ((StartState*)context);
+    if (state->myStartMenu->myCurrentSelection == 0)
+        state->myStateMachine->Push(new TransitionState(state->myStateMachine, state->myDrawer, new PlayState(state->myStateMachine, state->myDrawer)));
+    else
+        return false;
 }

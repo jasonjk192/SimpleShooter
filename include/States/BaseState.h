@@ -12,7 +12,7 @@ class BaseState
 public:
 	BaseState();
 	BaseState(StateMachine* aStateMachine, Drawer* aDrawer, std::string aName);
-	~BaseState(void);
+	virtual ~BaseState();
 
 	virtual bool Enter(void* params);
 	virtual bool Update(float aTime);

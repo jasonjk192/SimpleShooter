@@ -29,17 +29,16 @@ bool GameLostState::HandleEvents(SDL_Event* event)
 	if (keystate[SDL_SCANCODE_ESCAPE])
 		return false;
 	else if (keystate[SDL_SCANCODE_RETURN])
-		myStateMachine->Transition(new TransitionState(myStateMachine, myDrawer), "Start");
+		myStateMachine->Push(new TransitionState(myStateMachine, myDrawer, new StartState(myStateMachine, myDrawer)));
 	return true;
 }
 
 bool GameLostState::Draw()
 {
-	int winW, winH;
-	myDrawer->GetWindowSize(&winW, &winH);
+	SDL_Point windowSize = myDrawer->GetWindowSize();
 	myDrawer->SetColor(255, 255, 0, 255);
-	int posX = (winW - youLostText->GetSize()->x) / 2;
-	int posY = winH / 2 + youLostText->GetSize()->y;
+	int posX = (windowSize.x - youLostText->GetSize()->x) / 2;
+	int posY = windowSize.y / 2 + youLostText->GetSize()->y;
 	myDrawer->Draw(youLostText, posX, posY);
 	myDrawer->Draw(scoreText, posX, posY + 30);
 	return true;

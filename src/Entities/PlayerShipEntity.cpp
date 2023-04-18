@@ -10,10 +10,13 @@ PlayerShipEntity::PlayerShipEntity(const SDL_FPoint& aPosition, Texture* aTextur
 	myMaxHealth = 10;
 	currentHealth = 3;
 	myScore = 0;
+
+	laserSound = Mix_LoadWAV("./data/sounds/lazer.wav");
 }
 
 PlayerShipEntity::~PlayerShipEntity(void)
 {
+	Mix_FreeChunk(laserSound);
 }
 
 bool PlayerShipEntity::HandleEvents(SDL_Event* event)
@@ -58,6 +61,7 @@ void PlayerShipEntity::OnCollision(BaseEntity* anEntity)
 
 void PlayerShipEntity::Shoot()
 {
+	Mix_PlayChannel(1, laserSound, 0);
 	currentShootCooldown = myShootCooldown;
 	auto bullet = myWorld->SpawnEntity<FriendlyBulletEntity>(myPosition, ProjectileAsset::GetInstance().GetProjectileTexture(7));
 	bullet->SetOwner(this);

@@ -12,7 +12,7 @@ BaseState::BaseState(StateMachine* aStateMachine, Drawer* aDrawer, std::string a
 	name(aName)
 {}
 
-BaseState::~BaseState(void)
+BaseState::~BaseState()
 { }
 
 bool BaseState::Enter(void* params)

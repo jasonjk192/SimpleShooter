@@ -1,5 +1,5 @@
-#ifndef ENEMYSHIPENTITY_H
-#define ENEMYSHIPENTITY_H
+#ifndef ALLYSHIPENTITY_H
+#define ALLYSHIPENTITY_H
 
 #include "Assets/SDLMaths.h"
 
@@ -9,30 +9,23 @@
 #include "BulletEntity.h"
 #include "AIShipEntity.h"
 
-#include "Animation.h"
-
 #include "World.h"
 
 class World;
 
-class EnemyShipEntity : public AIShipEntity
+class AllyShipEntity : public AIShipEntity
 {
 public:
-	EnemyShipEntity(const SDL_FPoint& aPosition, Texture* aTexture, Drawer* aDrawer, World* aWorld);
-	~EnemyShipEntity(void);
+	AllyShipEntity(const SDL_FPoint& aPosition, Texture* aTexture, Drawer* aDrawer, World* aWorld);
+	~AllyShipEntity(void);
 
 	bool HandleEvents(SDL_Event* event);
 	bool Update(float aTime);
 	void Draw();
 	void OnCollision(BaseEntity* anEntity);
 
-	void ChangeHealth(int aValue) override { currentHealth += aValue; currentHealth = std::min(std::max(0, currentHealth), myMaxHealth); if (currentHealth == 0) Kill(); else markForDelete = false; }
-	void Kill();
-
 private:
 	World* myWorld;
-
-	Animation* deathAnim;
 
 	static BehaviourTree::NodeStatus Move(float aTime, void* ship, SDL_Event* event);
 	static BehaviourTree::NodeStatus PickRandom(float aTime, void* ship, SDL_Event* event);
@@ -51,4 +44,4 @@ private:
 	Action ShootAtShip = Action(*Shoot, this);
 };
 
-#endif // ENEMYSHIPENTITY_H
+#endif // ALLYSHIPENTITY_H

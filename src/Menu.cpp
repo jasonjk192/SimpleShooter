@@ -90,9 +90,6 @@ void Menu::Draw(int anIndex)
 {
     if (isActive)
     {
-        int winW, winH;
-        myDrawer->GetWindowSize(&winW, &winH);
-
         myUIAsset->DrawWindow(myDrawer, anIndex, myOffsetX - 2, myOffsetY - 2, maxSizeX + 2, (maxSizeY + 4) * myItems.size());
 
         int itemSize = myItems.size();

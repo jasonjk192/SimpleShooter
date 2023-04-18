@@ -31,7 +31,7 @@ public:
 	int GetTexturePositionFromRight(Texture* aTexture, int anOffset = 0);
 	int GetTexturePositionFromBottom(Texture* aTexture, int anOffset = 0);
 	float GetScale() const { return renderScale; }
-	void GetWindowSize(int *w, int *h) { SDL_GetWindowSize(myWindow, w, h); }
+	SDL_Point GetWindowSize() { int w, h;  SDL_GetWindowSize(myWindow, &w, &h); return SDL_Point{ w,h }; }
 	SDL_Renderer* GetRenderer() { return myRenderer; }
 
 private:

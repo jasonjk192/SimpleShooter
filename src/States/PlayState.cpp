@@ -25,7 +25,10 @@ bool PlayState::HandleEvents(SDL_Event* event)
 {
 	const Uint8* keystate = SDL_GetKeyboardState(NULL);
 	if (keystate[SDL_SCANCODE_ESCAPE])
-		return false;
+	{
+		myStateMachine->Push(new GamePausedState(myStateMachine, myDrawer));
+		return true;
+	}
 	myWorld->HandleEvents(event);
 	return true;
 }

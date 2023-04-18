@@ -29,8 +29,13 @@ FetchContent_Declare(sdl2_ttf GIT_REPOSITORY https://github.com/libsdl-org/SDL_t
 set(SDL2TTF_INSTALL OFF)
 FetchContent_MakeAvailable(sdl2_ttf)
 
-set(SDL2_INCLUDE_DIR "${FETCHCONTENT_BASE_DIR}/sdl-build/include")
-set(SDL_LIBRARIES SDL2main SDL2-static SDL2_image SDL2_ttf)
+# SDL2 Mixer
+FetchContent_Declare(sdl2mixer GIT_REPOSITORY https://github.com/libsdl-org/SDL_mixer.git GIT_TAG release-2.0.4)
+FetchContent_MakeAvailable(sdl2mixer)
+add_subdirectory("CMake Subfolders/SDL2Mixer")
+
+set(SDL2_INCLUDE_DIR "${FETCHCONTENT_BASE_DIR}/sdl-build/include" "${FETCHCONTENT_BASE_DIR}/sdl2mixer-src")
+set(SDL_LIBRARIES SDL2main SDL2-static SDL2_image SDL2_ttf SDL2_mixer)
 
 #--------------------------------------
 
@@ -38,32 +43,37 @@ set(SDL_LIBRARIES SDL2main SDL2-static SDL2_image SDL2_ttf)
 set(PROJECT_SOURCES_WITHOUT_MAIN
 	 "src/Assets/BackgroundAsset.cpp"
 	 "src/Assets/MiscAsset.cpp"
+	 "src/Assets/ProjectileAsset.cpp"
 	 "src/Assets/ShipAsset.cpp"
 	 "src/Assets/UIAsset.cpp"
 	 "src/Assets/SDLMaths.cpp"
 
 	 "src/Entities/BaseEntity.cpp"
 	 "src/Entities/AIShipEntity.cpp"
+	 "src/Entities/AllyShipEntity.cpp"
 	 "src/Entities/BulletEntity.cpp"
 	 "src/Entities/DynamicEntity.cpp"
 	 "src/Entities/EnemyShipEntity.cpp"
+	 "src/Entities/HealthPickupEntity.cpp"
 	 "src/Entities/PlayerShipEntity.cpp"
 	 "src/Entities/StartStateShipEntity.cpp"
 	
 	 "src/States/BaseState.cpp;"
 	 "src/States/GameLostState.cpp;"
 	 "src/States/GameWonState.cpp;"
+	 "src/States/GamePausedState.cpp"
 	 "src/States/PlayState.cpp;"
 	 "src/States/StartState.cpp;"
 	 "src/States/TransitionState.cpp"
 
+	 "src/Animation.cpp"
 	 "src/Drawer.cpp;"
 	 "src/Menu.cpp;"
 	 "src/ParticleSystem.cpp"
 	 "src/StateMachine.cpp;"
 	 "src/Texture.cpp;"
 	 "src/World.cpp"
-	  "src/Assets/ProjectileAsset.cpp" "src/Entities/HealthPickupEntity.cpp")
+	 )
 add_executable(${PROJECT_NAME} src/main.cpp ${PROJECT_SOURCES_WITHOUT_MAIN})
 
 # Include files

@@ -1,7 +1,10 @@
-#include "BaseState.h"
+#ifndef GAMEWONSTATE_H
+#define GAMEWONSTATE_H
+
 #include "StateMachine.h"
 
-#pragma once
+#include "States/StartState.h"
+
 class GameWonState : public BaseState
 {
 public:
@@ -19,7 +22,6 @@ private:
 
 	Texture* youWonText;
 	Texture* scoreText;
-
-	std::string startStateString = "Start";
 };
 
+#endif // GAMEWONSTATE_H

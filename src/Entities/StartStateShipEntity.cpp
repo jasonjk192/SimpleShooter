@@ -20,6 +20,17 @@ StartStateShipEntity::StartStateShipEntity(const SDL_FPoint& aPosition, Texture*
 	params.myPosition = { 0,0 };
 	params.myTexture = MiscAsset::GetInstance().GetFlameTexture(0);
 	myBooster = new ParticleSystem(aDrawer, params);
+
+	Animation::AnimationParams animParams;
+	animParams.animFrames.push_back(MiscAsset::GetInstance().GetFlameTexture(8));
+	animParams.animFrames.push_back(MiscAsset::GetInstance().GetFlameTexture(9));
+	animParams.animFrames.push_back(MiscAsset::GetInstance().GetFlameTexture(10));
+	animParams.animFrames.push_back(MiscAsset::GetInstance().GetFlameTexture(11));
+	animParams.animPosition = { 0,0 };
+	animParams.animSpeed = 0.1f;
+
+	myBoosterFire = new Animation(myDrawer, animParams);
+	myBoosterFire->Play();
 }
 
 StartStateShipEntity::~StartStateShipEntity(void)
@@ -39,19 +50,28 @@ bool StartStateShipEntity::Update(float aTime)
 	boosterParams->myPosition = { myPosition.x - myDirection.x * 5, myPosition.y - myDirection.y * 5};
 	boosterParams->myVelocity = { -myVelocity.x, -myVelocity.y };
 	myBooster->Update(aTime);
+
+	Animation::AnimationParams* animParams = myBoosterFire->GetParams();
+	animParams->animPosition = { myPosition.x - myBoosterFire->GetFrameSize()->x/2 , myPosition.y - myBoosterFire->GetFrameSize()->y/2 };
+	animParams->animRotation = 90+SDLMaths::rad2deg(SDLMaths::Angle(myDirection));
+	//myBoosterFire->Update(aTime);
+
 	return true;
 }
 
 void StartStateShipEntity::Draw()
 {
 	ParticleSystem::SystemParams* boosterParams = myBooster->GetParams();
+	Animation::AnimationParams* animParams = myBoosterFire->GetParams();
 	myDrawer->SetScale(myScale);
 	myDrawer->Draw(myTexture, myPosition.x - myTexture->GetSize()->x / 2, myPosition.y - myTexture->GetSize()->y / 2, 90 + SDLMaths::rad2deg(SDLMaths::Angle(myDirection)));
 	myDrawer->SetScale(1.f);
 
 	// Debug Rectangle
-	// myDrawer->DrawRect(boosterParams->myPosition.x - boosterParams->myTexture->GetSize()->x / 2, boosterParams->myPosition.y - boosterParams->myTexture->GetSize()->y / 2, boosterParams->myTexture->GetSize()->x, boosterParams->myTexture->GetSize()->y);
+	//myDrawer->DrawRect(myPosition.x - myTexture->GetSize()->x / 2, myPosition.y - myTexture->GetSize()->y / 2, myTexture->GetSize()->x, myTexture->GetSize()->y);
+	//myDrawer->DrawRect(boosterParams->myPosition.x - boosterParams->myTexture->GetSize()->x / 2, boosterParams->myPosition.y - boosterParams->myTexture->GetSize()->y / 2, boosterParams->myTexture->GetSize()->x, boosterParams->myTexture->GetSize()->y);
 	myBooster->Draw();
+	//myBoosterFire->Draw();
 }
 
 // ---------------- //
@@ -72,9 +92,8 @@ BehaviourTree::NodeStatus StartStateShipEntity::PickMouse(float aTime, void* shi
 BehaviourTree::NodeStatus StartStateShipEntity::PickRandom(float aTime, void* ship, SDL_Event* event)
 {
 	StartStateShipEntity* myShip = (StartStateShipEntity*)ship;
-	int winW, winH;
-	myShip->myDrawer->GetWindowSize(&winW, &winH);
-	myShip->SetDestination({ (float)(std::rand() % winW), (float)(std::rand() % winH) });
+	SDL_Point windowSize = myShip->myDrawer->GetWindowSize();
+	myShip->SetDestination({ (float)(std::rand() % windowSize.x), (float)(std::rand() % windowSize.y) });
 	return BehaviourTree::NodeStatus::SUCCESS;
 }
 
@@ -122,7 +141,7 @@ BehaviourTree::NodeStatus StartStateShipEntity::MoveVel(float aTime, void* ship,
 	if (!myShip->hasReachedDestination)
 	{
 		SDL_FPoint newDirection = SDLMaths::Normalize(SDLMaths::Direction(myShip->myPosition, myShip->myDestination));
-		myShip->myDirection = SDLMaths::Lerp(myShip->myDirection, newDirection, aTime );
+		myShip->myDirection = SDLMaths::Normalize(SDLMaths::Lerp(myShip->myDirection, newDirection, aTime ));
 		myShip->myVelocity = { myShip->myVelocity.x + myShip->myDirection.x , myShip->myVelocity.y + myShip->myDirection.y };
 		myShip->myVelocity = SDLMaths::ClampMagnitude(myShip->myVelocity, myShip->myMaxSpeed);
 		myShip->myPosition = { myShip->myPosition.x + aTime * myShip->myVelocity.x * myShip->myMoveSpeedMult , myShip->myPosition.y + aTime * myShip->myVelocity.y * myShip->myMoveSpeedMult };

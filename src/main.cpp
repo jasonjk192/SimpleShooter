@@ -2,9 +2,6 @@
 #include "Drawer.h"
 
 #include "States/StartState.h"
-#include "States/PlayState.h"
-#include "States/GameLostState.h"
-#include "States/GameWonState.h"
 
 #include "SDL_image.h"
 #include "SDL_ttf.h"
@@ -13,13 +10,14 @@
 
 #define SDL_MAIN_HANDLED
 #include <SDL.h>
+#include <SDL_mixer.h>
 
 #define SCREEN_WIDTH    800
 #define SCREEN_HEIGHT   600
 
 int main(int argc, char* argv[])
 {
-    if(SDL_Init(SDL_INIT_VIDEO) < 0)
+    if(SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) < 0)
     {
         std::cout << "SDL could not be initialized!" << std::endl << "SDL_Error: " << SDL_GetError() << std::endl;
         return 0;
@@ -42,6 +40,12 @@ int main(int argc, char* argv[])
 		return 0;
 	}
 
+	if (Mix_OpenAudio(22050, MIX_DEFAULT_FORMAT, 2, 4096) == -1)
+	{
+		std::cout << "Mixer could not be initialized!" << std::endl << "SDL_Error: " << SDL_GetError() << std::endl;
+		return 0;
+	}
+
 	Drawer* drawer = new Drawer(window, renderer);
 	UIAsset* uiAsset = &UIAsset::GetInstance(drawer);
 	BackgroundAsset* bgAsset = &BackgroundAsset::GetInstance(drawer);
@@ -50,11 +54,7 @@ int main(int argc, char* argv[])
 	ProjectileAsset* projectileAsset = &ProjectileAsset::GetInstance(drawer);
 
 	StateMachine* stateMachine = new StateMachine();
-	stateMachine->Add(new StartState(stateMachine, drawer));
-	stateMachine->Add(new PlayState(stateMachine, drawer));
-	stateMachine->Add(new GameLostState(stateMachine, drawer));
-	stateMachine->Add(new GameWonState(stateMachine, drawer));
-	stateMachine->Change("Start");
+	stateMachine->Change(new StartState(stateMachine, drawer));
 
 	float lastFrame = (float)SDL_GetTicks() * 0.001f;
 
@@ -62,6 +62,8 @@ int main(int argc, char* argv[])
 	
 	while (SDL_PollEvent(&event) >= 0)
 	{
+		stateMachine->AddPushedStates();
+
 		float currentFrame = (float)SDL_GetTicks() * 0.001f;
 		float elapsedTime = currentFrame - lastFrame;
 
@@ -74,6 +76,7 @@ int main(int argc, char* argv[])
 		SDL_RenderClear(renderer);
 
 		stateMachine->Draw();
+		stateMachine->DeletePoppedStates();
 
 		lastFrame = currentFrame;
 
@@ -81,6 +84,7 @@ int main(int argc, char* argv[])
 		SDL_Delay(1);
 	}
 
+	Mix_Quit();
     SDL_Quit();
 	delete drawer;
 	delete stateMachine;

@@ -21,6 +21,7 @@ public:
 	SDL_FPoint GetPosition() const { return myPosition; }
 	float GetScale() const { return myScale; }
 	bool IsMarkedForDelete() { return markForDelete; }
+	SDL_FPoint GetTextureCenterPoint() { return {myPosition.x + myTexture->GetSize()->x/2.f, myPosition.y + myTexture->GetSize()->y/2.f}; }
 
 	virtual bool HandleEvents(SDL_Event* event) { return true; }
 	virtual bool Update(float aTime) { return true; }

@@ -7,17 +7,15 @@ World::World(StateMachine* aStateMachine, Drawer* aDrawer):
 	myBackgroundAsset = &BackgroundAsset::GetInstance();
 	myUIAsset = &UIAsset::GetInstance();
 	myMiscAsset = &MiscAsset::GetInstance();
+	windowSize = myDrawer->GetWindowSize();
 
-	int winW, winH;
-	myDrawer->GetWindowSize(&winW, &winH);
-
-	PlayerShipEntity* playerShip = new PlayerShipEntity({ winW/2.f, winH/2.f }, ShipAsset::GetInstance().GetPlayerTexture(4), myDrawer, this);
+	PlayerShipEntity* playerShip = new PlayerShipEntity({ windowSize.x/2.f, windowSize .y/2.f }, ShipAsset::GetInstance().GetPlayerTexture(4), myDrawer, this);
 	playerShip->SetMaxSpeed(300);
 	playerShip->SetMaxAcceleration(10);
 	playerShip->SetScale(2.f);
 	worldEntities.push_back(playerShip);
 
-	worldBoundary = {0,0,winW,winH};
+	worldBoundary = {0, 0, windowSize.x, windowSize.y};
 }
 
 World::~World(void)
@@ -40,13 +38,19 @@ bool World::HandleEvents(SDL_Event* event)
 bool World::Update(float aTime)
 {
 	currentEnemySpawnerCooldown -= aTime;
+	currentAllySpawnerCooldown -= aTime;
 	currentPickupSpawnerCooldown -= aTime;
+
 	if (currentEnemySpawnerCooldown <= 0)
 	{
 		currentEnemySpawnerCooldown = myEnemySpawnerCooldown;
 		SpawnEnemyEntities();
 	}
-
+	if (currentAllySpawnerCooldown <= 0)
+	{
+		currentAllySpawnerCooldown = myAllySpawnerCooldown;
+		SpawnAllyEntities();
+	}
 	if (currentPickupSpawnerCooldown <= 0)
 	{
 		currentPickupSpawnerCooldown = myPickupSpawnerCooldown;
@@ -56,9 +60,9 @@ bool World::Update(float aTime)
 	for (auto entity : worldEntities)
 	{
 		entity->Update(aTime);
-		SDL_FPoint pos = entity->GetPosition();
 		if (PlayerShipEntity* ship = dynamic_cast<PlayerShipEntity*>(entity))
 		{
+			SDL_FPoint pos = ship->GetPosition();
 			SDL_FPoint vel = ship->GetVelocity();
 			if (pos.x < worldBoundary.x)
 			{
@@ -110,20 +114,17 @@ bool World::Update(float aTime)
 
 bool World::Draw()
 {
-	int bgSizeW = myBackgroundAsset->GetBackgroundTexture(4)->GetSize()->x;
-	int bgSizeH = myBackgroundAsset->GetBackgroundTexture(4)->GetSize()->y;
-	for (int i = 0; i < 10; i++)
-		myDrawer->Draw(myBackgroundAsset->GetBackgroundTexture(4), scrollHorizontal + i * bgSizeW, 0);
-	for (int i = 0; i < 10; i++)
-		myDrawer->Draw(myBackgroundAsset->GetBackgroundTexture(4), scrollHorizontal + i * bgSizeW, bgSizeH);
+	DrawBackground();
 
 	for (auto entity : worldEntities)
 		entity->Draw();
 
-	myDrawer->SetScale(5);
+	/*myDrawer->SetScale(5);
 	for(int i=0;i<5;i++)
-		myDrawer->Draw(myBackgroundAsset->GetBackgroundTexture(4), scrollHorizontal*5 + i*bgSizeW*5, 0);
-	myDrawer->SetScale(1);
+		myDrawer->Draw(myBackgroundAsset->GetBackgroundTexture(4), scrollHorizontal*5 + i * bgSize.x * 5, 0);
+	myDrawer->SetScale(1);*/
+	DrawForeground();
+	
 	DrawUI();
 
 	return true;
@@ -133,26 +134,35 @@ void World::CheckPlayerStatus()
 {
 	auto playerShip = dynamic_cast<PlayerShipEntity*>(worldEntities[0]);
 	if (!playerShip)
-		myStateMachine->Transition(new TransitionState(myStateMachine, myDrawer), "GameLost", new int(0));
+		myStateMachine->Push(new TransitionState(myStateMachine, myDrawer, new GameLostState(myStateMachine, myDrawer)), new int(0) );
 	else
 	{
 		if(playerShip->GetHealth()==0)
-			myStateMachine->Transition(new TransitionState(myStateMachine, myDrawer), "GameLost", new int(playerShip->GetScore()));
+			myStateMachine->Push(new TransitionState(myStateMachine, myDrawer, new GameLostState(myStateMachine, myDrawer)), new int(playerShip->GetScore()) );
 	}
 }
 
 void World::SpawnEnemyEntities()
 {
-	SDL_FPoint spawnPoint{ 50,50 };
+	SDL_FPoint spawnPoint{ (float)(std::rand() % windowSize.x), (float)(std::rand() % windowSize.y) };
 	auto enemy = SpawnEntity<EnemyShipEntity>(spawnPoint, ShipAsset::GetInstance().GetEnemyTexture(0));
 	enemy->SetMaxSpeed(30);
 	enemy->SetMaxAcceleration(10);
 	enemy->SetScale(2.f);
 }
 
+void World::SpawnAllyEntities()
+{
+	SDL_FPoint spawnPoint{ (float)(std::rand() % windowSize.x), (float)(std::rand() % windowSize.y) };
+	auto ally = SpawnEntity<AllyShipEntity>(spawnPoint, ShipAsset::GetInstance().GetPlayerTexture(7));
+	ally->SetMaxSpeed(30);
+	ally->SetMaxAcceleration(10);
+	ally->SetScale(2.f);
+}
+
 void World::SpawnPickupEntities()
 {
-	SDL_FPoint spawnPoint{ 150,50 };
+	SDL_FPoint spawnPoint{ (float)(std::rand() % windowSize.x), (float)(std::rand() % windowSize.y) };
 	auto health = SpawnEntity<HealthPickupEntity>(spawnPoint, MiscAsset::GetInstance().GetIconTexture(2));
 }
 
@@ -189,18 +199,78 @@ void World::DespawnEntities()
 
 void World::DrawUI()
 {
-	int winW, winH;
-	myDrawer->GetWindowSize(&winW, &winH);
-	
 	if(PlayerShipEntity* playerShip = dynamic_cast<PlayerShipEntity*>(worldEntities[0]))
 	{
 		myDrawer->SetTextureColorMod(myMiscAsset->GetIconTexture(2), 255, 0, 0);
 		for (int i = 0; i < playerShip->GetHealth(); i++)
-			myDrawer->Draw(myMiscAsset->GetIconTexture(2), winW - (i * 8) - (i * 4) - 20, 20);
+			myDrawer->Draw(myMiscAsset->GetIconTexture(2), windowSize.x - (i * 8) - (i * 4) - 20, 20);
 		myDrawer->SetTextureColorMod(myMiscAsset->GetIconTexture(2), 255, 255, 255);
 		std::string scoreText = "Score: " + std::to_string(playerShip->GetScore());
 
 		myDrawer->SetColor(255, 255, 255, 255);
 		myDrawer->DrawText(scoreText.c_str(), ".\\data\\fonts\\PublicPixel-z84yD.ttf", 20, 20, 8);
 	}
+}
+
+void World::DrawBackground()
+{
+	SDL_FPoint offset{ scrollHorizontal ,0 };
+	SDL_Point* backgroundSize = myBackgroundAsset->GetBackgroundTexture(4)->GetSize();
+	Texture* background = myBackgroundAsset->GetBackgroundTexture(4);
+
+	// Main area (Bottom right)
+	for (int x = offset.x; x < windowSize.x; x += backgroundSize->x)
+	{
+		for (int y = offset.y; y < windowSize.y; y += backgroundSize->y)
+		{
+			myDrawer->Draw(background, x, y);
+		}
+	}
+
+	// Top Left
+	for (int x = offset.x - backgroundSize->x; x >= -backgroundSize->x; x -= backgroundSize->x)
+	{
+		for (int y = offset.y - backgroundSize->y; y >= -backgroundSize->y; y -= backgroundSize->y)
+		{
+			myDrawer->Draw(background, x, y);
+		}
+	}
+
+	// Bottom Left
+	for (int x = offset.x - backgroundSize->x; x >= -backgroundSize->x; x -= backgroundSize->x)
+	{
+		for (int y = offset.y; y < windowSize.y; y += backgroundSize->y)
+		{
+			myDrawer->Draw(background, x, y);
+		}
+	}
+
+	// Top Right
+	for (int x = offset.x; x < windowSize.x; x += backgroundSize->x)
+	{
+		for (int y = offset.y - backgroundSize->y; y >= -backgroundSize->y; y -= backgroundSize->y)
+		{
+			myDrawer->Draw(background, x, y);
+		}
+	}
+}
+
+void World::DrawForeground()
+{
+	SDL_FPoint offset{ scrollHorizontal * 2.5f, 0 };
+	SDL_Point* backgroundSize = myBackgroundAsset->GetBackgroundTexture(4)->GetSize();
+	Texture* background = myBackgroundAsset->GetBackgroundTexture(4);
+
+	myDrawer->SetScale(5);
+
+	// Main area (Bottom right)
+	for (int x = offset.x; x < windowSize.x; x += backgroundSize->x * 5)
+	{
+		for (int y = offset.y; y < windowSize.y; y += backgroundSize->y * 5)
+		{
+			myDrawer->Draw(background, x, y);
+		}
+	}
+
+	myDrawer->SetScale(1);
 }

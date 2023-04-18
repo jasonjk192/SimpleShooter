@@ -45,9 +45,11 @@ void FriendlyBulletEntity::OnCollision(BaseEntity* anEntity)
 	if (anEntity == myOwner || dynamic_cast<PlayerShipEntity*>(anEntity)) return;
 	else
 	{
-		if (GameCharacterEntity* myShip = dynamic_cast<GameCharacterEntity*>(anEntity))
+		if (EnemyShipEntity* enemyShip = dynamic_cast<EnemyShipEntity*>(anEntity))
 		{
-			myShip->ChangeHealth(-1);
+			if (enemyShip->IsDead()) return;
+
+			enemyShip->ChangeHealth(-1);
 			SetMarkForDelete();
 			auto playerShip = dynamic_cast<PlayerShipEntity*>(myWorld->GetPlayerShipEntity());
 			playerShip->AddScore(10);
@@ -60,9 +62,11 @@ void EnemyBulletEntity::OnCollision(BaseEntity* anEntity)
 	if (anEntity == myOwner || dynamic_cast<EnemyShipEntity*>(anEntity)) return;
 	else
 	{
-		if(GameCharacterEntity* myShip = dynamic_cast<GameCharacterEntity*>(anEntity))
+		if(GameCharacterEntity* friendlyShip = dynamic_cast<GameCharacterEntity*>(anEntity))
 		{
-			myShip->ChangeHealth(-1);
+			if (friendlyShip->IsDead()) return;
+
+			friendlyShip->ChangeHealth(-1);
 			SetMarkForDelete();
 		}
 	}

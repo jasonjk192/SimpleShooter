@@ -3,6 +3,7 @@
 
 #include "AIShipEntity.h"
 #include "ParticleSystem.h"
+#include "Animation.h"
 
 #include "Assets/MiscAsset.h"
 
@@ -19,6 +20,7 @@ public:
 private:
 
 	ParticleSystem* myBooster;
+	Animation* myBoosterFire;
 	
 	// Can specify different functions and multiple behaviour trees
 

@@ -2,25 +2,37 @@
 
 #include <iostream>
 
-StateMachine::StateMachine()
+StateMachine::StateMachine():
+	hasPushed(false),
+	hasPopped(false)
 {}
 
 StateMachine::~StateMachine(void)
-{}
-
-void StateMachine::Change(std::string stateName, void* params)
 {
+	hasPopped = true;
+	DeletePoppedStates();
+	for (int i = myCurrentStates.size() - 1; i >= 0; i -= 1)
+		delete myCurrentStates[i];
+	for (int i = myPushedStates.size() - 1; i >= 0; i -= 1)
+		delete myCurrentStates[i];
+	myCurrentStates.clear();
+	myPushedStates.clear();
+}
+
+void StateMachine::Change(BaseState* aState, void* params)
+{
+	hasPushed = true;
 	if (myCurrentStates.size() > 0)
 	{
-		for (int i = myCurrentStates.size() - 1; i>=0; i-=1)
-			myCurrentStates[i]->Exit();
+		hasPopped = true;
+		for (int i = myCurrentStates.size() - 1; i >= 0; i -= 1)
+		{
+			myPoppedStates.push_back(myCurrentStates[i]);
+		}
 		myCurrentStates.clear();
 	}
-	auto state = GetState(stateName);
-	if (state == nullptr)
-		return;
-	myCurrentStates.push_back(state);
-	myCurrentStates[0]->Enter(params);
+	myPushedStates.push_back(aState);
+	myPushedStatesParams.push_back(params);
 }
 
 bool StateMachine::Update(float aTime)
@@ -41,40 +53,43 @@ bool StateMachine::Draw()
 	return true;
 }
 
-void StateMachine::Add(BaseState* aBaseState)
+void StateMachine::Push(BaseState* aState, void* params)
 {
-	myStates.push_back(aBaseState);
-}
-
-void StateMachine::Push(std::string stateName, void* params)
-{
-	auto state = GetState(stateName);
-	if (state == nullptr)
-		return;
-	state->Enter(params);
-	myCurrentStates.push_back(state);
-}
-
-void StateMachine::Transition(TransitionState* transitionState, std::string stateName, void* params)
-{
-	if (transitionState)
-	{
-		transitionState->Enter(&stateName);
-		transitionState->SetNextStateParams(params);
-		myCurrentStates.push_back(transitionState);
-	}
+	hasPushed = true;
+	myPushedStates.push_back(aState);
+	myPushedStatesParams.push_back(params);
 }
 
 void StateMachine::Pop()
 {
-	myCurrentStates[myCurrentStates.size() - 1]->Exit();
+	hasPopped = true;
+	myPoppedStates.push_back(myCurrentStates[myCurrentStates.size() - 1]);
 	myCurrentStates.pop_back();
 }
 
-BaseState* StateMachine::GetState(std::string stateName)
+void StateMachine::AddPushedStates()
 {
-	for (int i = 0; i < myStates.size(); i++)
-		if (myStates[i]->GetName() == stateName)
-			return myStates[i];
-	return nullptr;
+	if (hasPushed)
+	{
+		for (int i = 0; i < myPushedStates.size(); i++)
+		{
+			myCurrentStates.push_back(myPushedStates[i]);
+			myPushedStates[i]->Enter(myPushedStatesParams[i]);
+		}
+		myPushedStates.clear();
+		myPushedStatesParams.clear();
+	}
+}
+
+void StateMachine::DeletePoppedStates()
+{
+	if (hasPopped)
+	{
+		for (int i = myPoppedStates.size() - 1; i >= 0; i -= 1)
+		{
+			myPoppedStates[i]->Exit();
+			delete myPoppedStates[i];
+		}
+		myPoppedStates.clear();
+	}
 }

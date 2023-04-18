@@ -6,9 +6,9 @@
 #include "Assets/Button.h"
 
 #include "Menu.h"
-#include "StateMachine.h"
 
-#include "BaseState.h"
+#include "StateMachine.h"
+#include "States/PlayState.h"
 
 #include "Entities/StartStateShipEntity.h"
 
@@ -16,7 +16,7 @@ class StartState: public BaseState
 {
 public:
 	StartState(StateMachine* aStateMachine, Drawer* aDrawer);
-	~StartState(void) {};
+	~StartState();
 
 	bool Enter(void* params);
 	bool Update(float aTime);
@@ -33,13 +33,7 @@ private:
 
 	StartStateShipEntity* ship;
 
-	static bool onPressCallback(int index, void* context) {
-		StartState* state = ((StartState*)context);
-		if (state->myStartMenu->myCurrentSelection == 0)
-			state->myStateMachine->Transition(new TransitionState(state->myStateMachine, state->myDrawer), "Play");
-		else
-			return false;
-	}
+	static bool onPressCallback(int index, void* context);
 };
 
 #endif // STARTSTATE_H

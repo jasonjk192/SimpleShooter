@@ -16,21 +16,26 @@ public:
 	StateMachine();
 	~StateMachine(void);
 
-	void Change(std::string stateName, void* params = nullptr);
+	void Change(BaseState* aState, void* params = nullptr);
 	bool Update(float aTime);
 	bool HandleEvents(SDL_Event* event);
 	bool Draw();
-	void Add(BaseState* aBaseState);
 
-	void Push(std::string stateName, void* params = nullptr);
-	void Transition(TransitionState* transitionState, std::string stateName, void* params = nullptr);
+	void Push(BaseState* aState, void* params = nullptr);
 	void Pop();
 
-private:
-	BaseState* GetState(std::string stateName);
+	void AddPushedStates();
+	void DeletePoppedStates();
 
-	std::vector<BaseState*> myStates;
+private:
+
 	std::vector<BaseState*> myCurrentStates;
+	std::vector<BaseState*> myPoppedStates;
+	std::vector<BaseState*> myPushedStates;
+	std::vector<void*> myPushedStatesParams;
+
+	bool hasPushed;
+	bool hasPopped;
 };
 
 #endif // STATEMACHINE_H

@@ -7,7 +7,7 @@
 class TransitionState : public BaseState
 {
 public:
-	TransitionState(StateMachine* aStateMachine, Drawer* aDrawer);
+	TransitionState(StateMachine* aStateMachine, Drawer* aDrawer, BaseState* aNextState);
 	~TransitionState(void) {};
 
 	bool Enter(void* params);
@@ -18,8 +18,8 @@ public:
 
 private:
 	float transitionAlpha;
-	std::string nextState;
 	void* nextStateParams;
+	BaseState* nextState;
 };
 
 #endif // TRANSITIONSTATE_H

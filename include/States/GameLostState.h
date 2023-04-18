@@ -1,8 +1,9 @@
 #ifndef GAMELOSTSTATE_H
 #define GAMELOSTSTATE_H
 
-#include "BaseState.h"
 #include "StateMachine.h"
+
+#include "States/StartState.h"
 
 class GameLostState : public BaseState
 {
@@ -22,8 +23,6 @@ private:
 
 	int myScore;
 	Texture* scoreText;
-
-	std::string startStateString = "Start";
 };
 
 #endif // GAMELOSTSTATE_H

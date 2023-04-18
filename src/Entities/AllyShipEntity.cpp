@@ -1,10 +1,10 @@
-#include "Entities/EnemyShipEntity.h"
+#include "Entities/AllyShipEntity.h"
 
-EnemyShipEntity::EnemyShipEntity(const SDL_FPoint& aPosition, Texture* aTexture, Drawer* aDrawer, World* aWorld) :
+AllyShipEntity::AllyShipEntity(const SDL_FPoint& aPosition, Texture* aTexture, Drawer* aDrawer, World* aWorld):
 	AIShipEntity(aPosition, aTexture, aDrawer),
 	myWorld(aWorld)
 {
-	myName = "EnemyShip";
+	myName = "AllyShip";
 	myTree = new BehaviourTree();
 	randomMoveSequence.addChild(&PickRandomDestination);
 	randomMoveSequence.addChild(&MoveToDestination);
@@ -20,78 +20,56 @@ EnemyShipEntity::EnemyShipEntity(const SDL_FPoint& aPosition, Texture* aTexture,
 	currentShootCooldown = 0.f;
 }
 
-EnemyShipEntity::~EnemyShipEntity(void)
+AllyShipEntity::~AllyShipEntity(void)
 {
 }
 
-bool EnemyShipEntity::HandleEvents(SDL_Event* event)
+bool AllyShipEntity::HandleEvents(SDL_Event* event)
 {
 	myTree->handleEvents(event);
 	return true;
 }
 
 
-bool EnemyShipEntity::Update(float aTime)
+bool AllyShipEntity::Update(float aTime)
 {
-	if (isDead)
-	{
-		deathAnim->Update(aTime);
-		if (!deathAnim->IsPlaying())
-			markForDelete = true;
-		return true;
-	}
-
-	BaseEntity* nearestEntity = myWorld->GetNearestEntity<PlayerShipEntity*>(this);
+	BaseEntity* nearestEntity = myWorld->GetNearestEntity<EnemyShipEntity*>(this);
 	currentShootCooldown -= aTime;
 	currentShootCooldown = std::max(currentShootCooldown, 0.f);
 	myTree->run(aTime);
 
+	//ParticleSystem::SystemParams* boosterParams = myBooster->GetParams();
+	//boosterParams->myPosition = { myPosition.x - myDirection.x * 5, myPosition.y - myDirection.y * 5 };
+	//boosterParams->myVelocity = { -myVelocity.x, -myVelocity.y };
+	//myBooster->Update(aTime);
 	return true;
 }
 
-void EnemyShipEntity::Draw()
+void AllyShipEntity::Draw()
 {
-	if (isDead)
-	{
-		deathAnim->Draw();
-		return;
-	}
-
+	//ParticleSystem::SystemParams* boosterParams = myBooster->GetParams();
 	myDrawer->SetScale(myScale);
 	myDrawer->Draw(myTexture, myPosition.x - myTexture->GetSize()->x / 2, myPosition.y - myTexture->GetSize()->y / 2, 90 + SDLMaths::rad2deg(SDLMaths::Angle(myDirection)));
 	myDrawer->SetScale(1.f);
+
+	// Debug Rectangle
+	// myDrawer->DrawRect(boosterParams->myPosition.x - boosterParams->myTexture->GetSize()->x / 2, boosterParams->myPosition.y - boosterParams->myTexture->GetSize()->y / 2, boosterParams->myTexture->GetSize()->x, boosterParams->myTexture->GetSize()->y);
+	//myBooster->Draw();
 }
 
-void EnemyShipEntity::OnCollision(BaseEntity* anEntity)
+void AllyShipEntity::OnCollision(BaseEntity* anEntity)
 {
-	if (isDead) return;
-	if (PlayerShipEntity* playerShip = dynamic_cast<PlayerShipEntity*>(anEntity))
+	if (EnemyShipEntity* enemyShip = dynamic_cast<EnemyShipEntity*>(anEntity))
 	{
 		ChangeHealth(-1);
-		playerShip->ChangeHealth(-1);
+		enemyShip->ChangeHealth(-1);
 	}
 }
 
-void EnemyShipEntity::Kill()
+BehaviourTree::NodeStatus AllyShipEntity::PickRandom(float aTime, void* ship, SDL_Event* event)
 {
-	isDead = true;
-
-	Animation::AnimationParams animParams;
-	animParams.animFrames.push_back(MiscAsset::GetInstance().GetExplosionTexture(4));
-	animParams.animFrames.push_back(MiscAsset::GetInstance().GetExplosionTexture(5));
-	animParams.animFrames.push_back(MiscAsset::GetInstance().GetExplosionTexture(6));
-	animParams.animFrames.push_back(MiscAsset::GetInstance().GetExplosionTexture(7));
-	animParams.animPosition = { myPosition.x,myPosition.y };
-	animParams.animSpeed = 15.f;
-
-	deathAnim = new Animation(myDrawer, animParams);
-	deathAnim->Play();
-}
-
-BehaviourTree::NodeStatus EnemyShipEntity::PickRandom(float aTime, void* ship, SDL_Event* event)
-{
-	EnemyShipEntity* myShip = (EnemyShipEntity*)ship;
-	if (myShip->hasReachedDestination)
+	AllyShipEntity* myShip = (AllyShipEntity*)ship;
+	if(myShip->hasReachedDestination)
 	{
 		SDL_Point windowSize = myShip->myDrawer->GetWindowSize();
 		myShip->SetDestination({ (float)(std::rand() % windowSize.x), (float)(std::rand() % windowSize.y) });
@@ -99,14 +77,14 @@ BehaviourTree::NodeStatus EnemyShipEntity::PickRandom(float aTime, void* ship, S
 	return BehaviourTree::NodeStatus::SUCCESS;
 }
 
-BehaviourTree::NodeStatus EnemyShipEntity::Nearby(float aTime, void* ship, SDL_Event* event)
+BehaviourTree::NodeStatus AllyShipEntity::Nearby(float aTime, void* ship, SDL_Event* event)
 {
-	EnemyShipEntity* myShip = (EnemyShipEntity*)ship;
-	BaseEntity* nearestEntity = myShip->myWorld->GetNearestEntity<PlayerShipEntity*>(myShip);
-	if (dynamic_cast<PlayerShipEntity*>(nearestEntity))
+	AllyShipEntity* myShip = (AllyShipEntity*)ship;
+	BaseEntity* nearestEntity = myShip->myWorld->GetNearestEntity<EnemyShipEntity*>(myShip);
+	if (dynamic_cast<EnemyShipEntity*>(nearestEntity))
 	{
 		float distance = SDLMaths::Distance(myShip->myPosition, nearestEntity->GetPosition());
-		if (distance < 250.f)
+		if(distance < 250.f)
 		{
 			myShip->SetDestination(nearestEntity->GetPosition());
 			return BehaviourTree::NodeStatus::SUCCESS;
@@ -115,9 +93,9 @@ BehaviourTree::NodeStatus EnemyShipEntity::Nearby(float aTime, void* ship, SDL_E
 	return BehaviourTree::NodeStatus::FAILED;
 }
 
-BehaviourTree::NodeStatus EnemyShipEntity::Move(float aTime, void* ship, SDL_Event* event)
+BehaviourTree::NodeStatus AllyShipEntity::Move(float aTime, void* ship, SDL_Event* event)
 {
-	EnemyShipEntity* myShip = (EnemyShipEntity*)ship;
+	AllyShipEntity* myShip = (AllyShipEntity*)ship;
 
 	float distance = SDLMaths::Distance(myShip->myPosition, myShip->myDestination);
 
@@ -136,25 +114,25 @@ BehaviourTree::NodeStatus EnemyShipEntity::Move(float aTime, void* ship, SDL_Eve
 	return BehaviourTree::NodeStatus::SUCCESS;
 }
 
-BehaviourTree::NodeStatus EnemyShipEntity::Follow(float aTime, void* ship, SDL_Event* event)
+BehaviourTree::NodeStatus AllyShipEntity::Follow(float aTime, void* ship, SDL_Event* event)
 {
-	EnemyShipEntity* myShip = (EnemyShipEntity*)ship;
-	BaseEntity* nearestEntity = myShip->myWorld->GetNearestEntity<PlayerShipEntity*>(myShip);
-	if (dynamic_cast<PlayerShipEntity*>(nearestEntity))
+	AllyShipEntity* myShip = (AllyShipEntity*)ship;
+	BaseEntity* nearestEntity = myShip->myWorld->GetNearestEntity<EnemyShipEntity*>(myShip);
+	if(dynamic_cast<EnemyShipEntity*>(nearestEntity))
 		myShip->SetDestination(nearestEntity->GetPosition());
 	return BehaviourTree::NodeStatus::SUCCESS;
 }
 
-BehaviourTree::NodeStatus EnemyShipEntity::Shoot(float aTime, void* ship, SDL_Event* event)
-{
-	EnemyShipEntity* myShip = (EnemyShipEntity*)ship;
+BehaviourTree::NodeStatus AllyShipEntity::Shoot(float aTime, void* ship, SDL_Event* event)
+{	
+	AllyShipEntity* myShip = (AllyShipEntity*)ship;
 	float angle = SDLMaths::rad2deg(SDLMaths::Angle(SDLMaths::Direction(myShip->myPosition, myShip->myDestination), myShip->myDirection));
-	if (angle <= 15 && angle >= -15)
+	if(angle <= 15 && angle >= -15)
 	{
 		if (myShip->currentShootCooldown <= 0.f)
 		{
 			myShip->currentShootCooldown = myShip->myShootCooldown;
-			auto bullet = myShip->myWorld->SpawnEntity<EnemyBulletEntity>(myShip->myPosition, ProjectileAsset::GetInstance().GetProjectileTexture(6));
+			auto bullet = myShip->myWorld->SpawnEntity<FriendlyBulletEntity>(myShip->myPosition, ProjectileAsset::GetInstance().GetProjectileTexture(7));
 			bullet->SetOwner(myShip);
 			bullet->SetMoveSpeedMult(1000);
 			bullet->SetVelocity(myShip->myDirection);

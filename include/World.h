@@ -9,7 +9,12 @@
 #include "StateMachine.h"
 #include "Drawer.h"
 
+#include "States/GameLostState.h"
+#include "States/GameWonState.h"
+#include "States/GamePausedState.h"
+
 #include "Entities/PlayerShipEntity.h"
+#include "Entities/AllyShipEntity.h"
 #include "Entities/EnemyShipEntity.h"
 #include "Entities/HealthPickupEntity.h"
 
@@ -39,6 +44,7 @@ public:
 		return nullptr;
 	};
 
+	template<typename ENTITY>
 	BaseEntity* GetNearestEntity(BaseEntity* anEntity)
 	{
 		float nearestDistance = 9999.f;
@@ -46,10 +52,13 @@ public:
 		for (auto entity : worldEntities)
 		{
 			if (entity == anEntity) continue;
-			if (float distance = SDLMaths::Distance(anEntity->GetPosition(), entity->GetPosition()) < nearestDistance)
+			if(dynamic_cast<ENTITY>(entity))
 			{
-				nearestDistance = distance;
-				nearestEntity = entity;
+				if (float distance = SDLMaths::Distance(anEntity->GetPosition(), entity->GetPosition()) < nearestDistance)
+				{
+					nearestDistance = distance;
+					nearestEntity = entity;
+				}
 			}
 		}
 		return nearestEntity;
@@ -60,10 +69,13 @@ public:
 private:
 	void CheckPlayerStatus();
 	void SpawnEnemyEntities();
+	void SpawnAllyEntities();
 	void SpawnPickupEntities();
 	void CheckCollisions();
 	void DespawnEntities();
 	void DrawUI();
+	void DrawBackground();
+	void DrawForeground();
 
 	StateMachine* myStateMachine;
 	Drawer* myDrawer;
@@ -76,12 +88,16 @@ private:
 	std::vector<BaseEntity*> newEntities;
 
 	float myEnemySpawnerCooldown = 5.f;
-	float currentEnemySpawnerCooldown = 0.f;
+	float currentEnemySpawnerCooldown = myEnemySpawnerCooldown;
 
-	float myPickupSpawnerCooldown = 30.f;
-	float currentPickupSpawnerCooldown = 0.f;
+	float myAllySpawnerCooldown = 30.f;
+	float currentAllySpawnerCooldown = myAllySpawnerCooldown;
+
+	float myPickupSpawnerCooldown = 10.f;
+	float currentPickupSpawnerCooldown = myPickupSpawnerCooldown;
 
 	SDL_Rect worldBoundary;
+	SDL_Point windowSize;
 
 	float scrollHorizontal = 0;
 };

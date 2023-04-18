@@ -16,7 +16,7 @@ public:
 	~Texture(void);
 
 	SDL_Texture* GetTexture() { return texture; }
-	SDL_Point* GetSize() { return size; }
+	SDL_Point* GetSize() const { return size; }
 
 private:
 	SDL_Texture* texture;
